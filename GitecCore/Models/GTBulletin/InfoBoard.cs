@@ -1,11 +1,21 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Gitec.Data;
+using Gitec.Utilities;
 
 namespace Gitec.Models.GTBulletin;
 
 public class InfoBoard : BaseEntity
 {
+    public InfoBoard(string title)
+    {
+        Title = title;
+        Name = title.ToSlug();
+    }
+    
     [MaxLength(50)]
-    public string Title { get; set; } = string.Empty;
+    public string Title { get; set; }
+    [MaxLength(50)]
+    public string Name { get; set; }
     public int SortOrder { get; set; } = 0;
     public bool IsPublished { get; set; } = false;
     public bool IsArchived { get; set; } = false;
@@ -13,34 +23,40 @@ public class InfoBoard : BaseEntity
     public ICollection<InfoBoardItem> InfoBoardItems { get; set; } = new List<InfoBoardItem>();
 }
 
-public class InfoBoardItem : BaseEntity
+public abstract class InfoBoardItem : BaseEntity
 {
+    public InfoBoardItem(string title)
+    {
+        Title = title;
+        Name = title.ToSlug();
+    }
     [MaxLength(50)]
     public string Title { get; set; } = string.Empty;
-    public string JsonContent { get; set; } = string.Empty;
+    [MaxLength(50)]
+    public string Name { get; set; } = string.Empty;
+    public InfoBoardItemType Type { get; set; } = InfoBoardItemType.Text;
     public int SortOrder { get; set; } = 0;
     public bool IsPublished { get; set; } = false;
     public bool IsArchived { get; set; } = false;
-    public InfoBoardItemType Type { get; set; } = InfoBoardItemType.Text;
 }
 
-public enum InfoBoardItemType
-{
-    Text,
-    Image,
-    Video,
-    Markdown,
-    File,
-    RssFeed
-}
+
 
 public class InfoBoardItemText : InfoBoardItem
 {
-    public string Content { get; set; } = string.Empty;
+    public InfoBoardItemText(string title) : base(title)
+    {
+    }
+
+    public string TextContent { get; set; } = string.Empty;
 }
 
 public class InfoBoardItemImage : InfoBoardItem
 {
+    public InfoBoardItemImage(string title) : base(title)
+    {
+    }
+
     [MaxLength(255)]
     public string ImageUrl { get; set; } = string.Empty;
     [MaxLength(255)]
@@ -51,6 +67,10 @@ public class InfoBoardItemImage : InfoBoardItem
 
 public class InfoBoardItemVideo : InfoBoardItem
 {
+    public InfoBoardItemVideo(string title) : base(title)
+    {
+    }
+
     [MaxLength(255)]
     public string VideoSource { get; set; } = string.Empty;
     [MaxLength(255)]
@@ -61,11 +81,19 @@ public class InfoBoardItemVideo : InfoBoardItem
 
 public class InfoBoardItemMarkdown : InfoBoardItem
 {
+    public InfoBoardItemMarkdown(string title) : base(title)
+    {
+    }
+
     public string MarkdownContent { get; set; } = string.Empty;
 }
 
 public class InfoBoardItemRssFeed : InfoBoardItem
 {
+    public InfoBoardItemRssFeed(string title) : base(title)
+    {
+    }
+
     [MaxLength(255)]
     public string RssFeedUrl { get; set; } = string.Empty;
 }

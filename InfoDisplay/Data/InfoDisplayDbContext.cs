@@ -1,15 +1,21 @@
-﻿using Gitec.Models;
+﻿using Gitec.Data;
+using Gitec.Models;
 using Gitec.Models.GTBulletin;
 using Gitec.Services;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace GTBulletin.Data;
+namespace InfoDisplay.Data;
 
-public class InfoBoardDbContext : IdentityDbContext
+public class InfoDisplayDbContext : DbContext
 {
-    public InfoBoardDbContext(DbContextOptions<InfoBoardDbContext> options) : base(options) { }
-    
+    public InfoDisplayDbContext(DbContextOptions<InfoDisplayDbContext> options) : base(options)
+    {
+    }
+
+    public InfoDisplayDbContext()
+    {
+    }
+
     public DbSet<InfoBoard> InfoBoards { get; set; }
     public DbSet<InfoBoardItem> InfoBoardItems { get; set; }
     public DbSet<InfoBoardItemText> InfoBoardItemTexts { get; set; }
@@ -27,7 +33,7 @@ public class InfoBoardDbContext : IdentityDbContext
 
         modelBuilder.Entity<InfoBoardItem>()
             .HasDiscriminator<InfoBoardItemType>(nameof(InfoBoardItem.Type))
-            .HasValue<InfoBoardItem>(InfoBoardItemType.Text) 
+            .HasValue<InfoBoardItem>(InfoBoardItemType.File) // Ensure unique discriminator
             .HasValue<InfoBoardItemText>(InfoBoardItemType.Text)
             .HasValue<InfoBoardItemImage>(InfoBoardItemType.Image)
             .HasValue<InfoBoardItemVideo>(InfoBoardItemType.Video)
@@ -39,10 +45,12 @@ public class InfoBoardDbContext : IdentityDbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlite($"Data Source={ConfigurationService.GetDatabaseFile()}"); // Ensure SQLite is configured
+            Console.WriteLine(
+                $"Connection string: {ConfigurationService.GetConnectionString()}"); // Ensure connection string is correct
+            optionsBuilder.UseSqlite($"{ConfigurationService.GetConnectionString()}"); // Ensure SQLite is configured
         }
     }
-    
+
     public override int SaveChanges()
     {
         UpdateTimestamps();
@@ -65,7 +73,7 @@ public class InfoBoardDbContext : IdentityDbContext
             entry.Entity.UpdatedAt = DateTime.UtcNow;
         }
     }
-    
+
     //
     public List<InfoBoard> GetPublishedInfoBoards()
     {
@@ -75,7 +83,8 @@ public class InfoBoardDbContext : IdentityDbContext
             .ToList();
     }
 
-    public InfoBoard GetInfoBoard(Guid Uid) => InfoBoards.FirstOrDefault(i => i.Uid == Uid) ?? throw new InvalidOperationException();
+    public InfoBoard GetInfoBoard(Guid Uid) =>
+        InfoBoards.FirstOrDefault(i => i.Uid == Uid) ?? throw new InvalidOperationException();
 
     public List<InfoBoardItem> GetPublishedInfoBoardItems(InfoBoard board)
     {
@@ -88,5 +97,52 @@ public class InfoBoardDbContext : IdentityDbContext
             .Where(i => i.IsPublished)
             .OrderBy(i => i.SortOrder)
             .ToList();
+    }
+
+
+    public void SeedData(bool force = false)
+    {
+        if (force)
+        {
+            InfoBoards.RemoveRange(InfoBoards);
+            SaveChanges();
+        }
+        
+        if (InfoBoards.Any())
+            return;
+        
+        
+        for (int i = 0; i <= 3; i++)
+        {
+            try
+            {
+                var board = new InfoBoard($"Board - {i}")
+                {
+                    SortOrder = i
+                };
+            
+                for (int j = 0; j <= 3; j++)
+                {
+                    try
+                    {
+                        var item = new InfoBoardItemText($"Item - {i}x{j}]")
+                        {
+                            SortOrder = j
+                        };
+                        board.InfoBoardItems.Add(item);
+                    } catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
+                }
+
+                InfoBoards.Add(board);
+            } catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+        
+        SaveChanges();
     }
 }

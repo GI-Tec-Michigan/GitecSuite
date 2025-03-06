@@ -141,4 +141,5 @@ namespace Gitec.Utilities;
             Array.Reverse(array);
             return new string(array);
         }
+        
     }

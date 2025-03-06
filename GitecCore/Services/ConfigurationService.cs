@@ -56,6 +56,13 @@ public static class ConfigurationService
         return DatabaseFile!;
     }
     
+    public static string GetConnectionString()
+    {
+        if(!IsInitialized)
+            throw new ArgumentNullException(nameof(AppName));
+        return $"Data Source={DatabaseFile}";
+    }
+    
     public static void Init(string appName)
     {
         if(string.IsNullOrEmpty(appName))

@@ -1,10 +1,10 @@
 using Gitec.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using GTBulletin.Data;
+using InfoDisplay.Data;
 using Serilog;
 
-namespace GTBulletin;
+namespace InfoDisplay;
 
 public class Program
 {
@@ -19,35 +19,23 @@ public class Program
 
         try
         {
+            ConfigurationService.Init("InfoDisplay");
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
-            ConfigurationService.Init("GTBulletin");
-            
-            builder.Services.AddDbContext<InfoBoardDbContext>(options =>
-                options.UseSqlite(ConfigurationService.GetDatabasePath()));
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlite(ConfigurationService.GetConnectionString()));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-            
+
+            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddRazorPages();
 
+
+            builder.Services.AddScoped<InfoDisplayDbContext>();
+
+
             var app = builder.Build();
-            
-            // **Ensure Database is Created and Migrations are Applied**
-            using (var scope = app.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-                try
-                {
-                    var dbContext = services.GetRequiredService<InfoBoardDbContext>();
-                    dbContext.Database.Migrate(); // Apply migrations automatically
-                    Log.Information("Database has been ensured and migrations applied.");
-                }
-                catch (Exception ex)
-                {
-                    Log.Fatal(ex, "An error occurred while applying migrations.");
-                }
-            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -72,12 +60,11 @@ public class Program
                 .WithStaticAssets();
 
             app.Run();
-        }
-        catch (Exception ex)
+            
+        } catch (Exception ex)
         {
-            Log.Fatal(ex, "An unhandled exception occurred during startup.");
-        }
-        finally
+            Log.Fatal(ex, "An error occurred while starting the application.");
+        } finally
         {
             Log.CloseAndFlush();
         }

@@ -4,8 +4,12 @@
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <UserSecretsId>aspnet-GTBulletin-33180ca1-7f84-4efc-bbfa-29ae50c4fe8c</UserSecretsId>
+        <UserSecretsId>aspnet-InfoDisplay-9dbf0b36-7763-452b-95e1-c0293db88563</UserSecretsId>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Update="app.db" CopyToOutputDirectory="PreserveNewest" ExcludeFromSingleFile="true"/>
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.2"/>
@@ -17,11 +21,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\GitecCore\GitecCore.csproj" />
+        <ProjectReference Include="..\GitecCore\GitecCore.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Data\Migrations\" />
+        <Folder Include="Data\Migrations\" />
     </ItemGroup>
 
 </Project>
