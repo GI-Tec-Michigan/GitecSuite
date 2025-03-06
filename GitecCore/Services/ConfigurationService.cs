@@ -90,9 +90,9 @@ public static class ConfigurationService
         {
             // is application running on windows or linux
             PlatformID.Win32NT => 
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), $"GitecSuite.{AppName}"),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "GitecSuite", $"GitecSuite.{AppName}"),
             PlatformID.Unix => 
-                Path.Combine("/var/lib/", $"GitecSuite.{AppName}"),
+                Path.Combine("/var/lib/", "GitecSuite", $"GitecSuite.{AppName}"),
             _ => throw new PlatformNotSupportedException()
         })!;
     }

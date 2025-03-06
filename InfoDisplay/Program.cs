@@ -31,6 +31,7 @@ public class Program
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddRazorPages();
 
+            builder.Services.AddHttpClient<RssFeedService>();
 
             builder.Services.AddScoped<InfoDisplayDbContext>();
 

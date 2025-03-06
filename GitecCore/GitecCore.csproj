@@ -36,7 +36,10 @@
         <PackageReference Include="Microsoft.Graph" Version="5.70.0" />
         <PackageReference Include="Microsoft.Graph.Core" Version="3.2.3" />
         <PackageReference Include="Microsoft.Identity.Client" Version="4.68.0" />
-    </ItemGroup>
+		<!-- Rss -->
+		<PackageReference Include="System.ServiceModel.Syndication" Version="9.0.2" />
+	
+	</ItemGroup>
 
     <ItemGroup>
         <None Update="gitec-auth.json">
