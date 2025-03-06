@@ -1,0 +1,31 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome to GTBulletin</h1>
+    <p class="lead">The place to find all the information you need about Gi-Tec</p>
+</div>
+
+<div class="container mt-4">
+    <h2>Published Info Boards</h2>
+
+    @if (Model.PublishedInfoBoards != null && Model.PublishedInfoBoards.Any())
+    {
+        <div class="list-group">
+            @foreach (var board in Model.PublishedInfoBoards)
+            {
+                <div class="list-group-item">
+                    <h4>@board.Title</h4>
+                    <small class="text-muted">Published on: @board.CreatedAt.ToString("MMM dd, yyyy")</small>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p>No published info boards available.</p>
+    }
+</div>
