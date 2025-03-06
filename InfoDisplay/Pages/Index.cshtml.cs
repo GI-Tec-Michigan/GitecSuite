@@ -1,4 +1,4 @@
-using Gitec.Models.GTBulletin;
+using Gitec.Models.InfoDisplay;
 using InfoDisplay.Data;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -17,8 +17,8 @@ public class IndexModel : PageModel
         _logger = logger;
         _dbContext = dbContext;
         _dbContext.SeedData(true);
+        _logger.LogInformation("IndexModel instantiated");
     }
-
 
     public void OnGet()
     {

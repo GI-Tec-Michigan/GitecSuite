@@ -3,6 +3,7 @@ using System;
 using InfoDisplay.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InfoDisplay.Migrations.InfoDisplay
 {
     [DbContext(typeof(InfoDisplayDbContext))]
-    partial class InfoDisplayDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250306192210_AddedImageStory")]
+    partial class AddedImageStory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.2");
@@ -178,10 +181,6 @@ namespace InfoDisplay.Migrations.InfoDisplay
                     b.Property<string>("VideoSource")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("VideoStory")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasDiscriminator().HasValue(2);

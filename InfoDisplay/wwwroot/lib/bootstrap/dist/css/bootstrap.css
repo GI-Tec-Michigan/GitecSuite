@@ -706,6 +706,11 @@ progress {
   content: "— ";
 }
 
+.img-item {
+    max-height: 200px;
+}
+
+
 .img-fluid {
   max-width: 100%;
   height: auto;

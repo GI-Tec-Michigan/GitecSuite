@@ -1,0 +1,12 @@
+﻿@using Gitec.Models.InfoDisplay
+@model InfoBoardItemImage
+<div class="d-flex align-items-start">
+    <figure class="text-left me-3">
+        <img src="@Model.ImageUrl" alt="@Model.ImageAlt" class="img-item" />
+        @if (!string.IsNullOrEmpty(Model.ImageCaption))
+        {
+            <figcaption class="text-muted">@Model.ImageCaption</figcaption>
+        }
+    </figure>
+    <p>@Model.ImageStory</p>
+</div>

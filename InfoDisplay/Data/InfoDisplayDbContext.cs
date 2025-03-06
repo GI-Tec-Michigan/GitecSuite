@@ -1,6 +1,6 @@
 ﻿using Gitec.Data;
 using Gitec.Models;
-using Gitec.Models.GTBulletin;
+using Gitec.Models.InfoDisplay;
 using Gitec.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -118,31 +118,49 @@ public class InfoDisplayDbContext : DbContext
             {
                 var board = new InfoBoard($"Board - {i}")
                 {
-                    SortOrder = i
+                    SortOrder = 1,
+                    IsPublished = true
                 };
-            
-                for (int j = 0; j <= 3; j++)
+
+
+                var textItem = new InfoBoardItemText($"Text Item - {i}")
                 {
-                    try
-                    {
-                        var item = new InfoBoardItemText($"Item - {i}x{j}]")
-                        {
-                            SortOrder = j
-                        };
-                        board.InfoBoardItems.Add(item);
-                    } catch (Exception e)
-                    {
-                        Console.WriteLine(e);
-                    }
-                }
+                    SortOrder = 2,
+                    TextContent = "This is a text item"
+                };
+                board.InfoBoardItems.Add(textItem);
+
+                var imageItem = new InfoBoardItemImage($"Image Item - {i}")
+                {
+                    SortOrder = 3,
+                    ImageUrl = "https://amplifyingperformance.com/wp-content/uploads/2023/07/img-balancing-school-sports-768x439.jpg",
+                    ImageAlt = "5 Female Student Athletes",
+                    ImageCaption = "How To Balance School and Sports as a High Performing Student Athlete",
+                    ImageStory = "When a high achieving student is also a high performing athlete, they often wind up grappling with a unique set of challenges.\r\n\r\nThe worlds of academics and athletics can be demanding, intense, and fiercely competitive in their own right—and these student athletes are attempting to excel in both."
+                };
+                board.InfoBoardItems.Add(imageItem);
+
+                var markdownItem = new InfoBoardItemMarkdown($"Markdown Item - {i}")
+                {
+                    SortOrder = 4,
+                    MarkdownContent = "# This is a markdown item\n\nThis is a paragraph"
+                };
+                board.InfoBoardItems.Add(markdownItem);
+
+                var rssFeedItem = new InfoBoardItemRssFeed($"RssFeed Item - {i}")
+                {
+                    SortOrder = 5,
+                    RssFeedUrl = "https://www.nasa.gov/rss/dyn/breaking_news.rss"
+                };
+                board.InfoBoardItems.Add(rssFeedItem);
 
                 InfoBoards.Add(board);
             } catch (Exception e)
             {
                 Console.WriteLine(e);
             }
-        }
         
-        SaveChanges();
+            SaveChanges();
+        }
     }
 }

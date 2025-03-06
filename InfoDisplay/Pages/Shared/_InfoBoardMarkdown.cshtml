@@ -1,0 +1,5 @@
+﻿@using Gitec.Models.InfoDisplay
+@model InfoBoardItemMarkdown
+<div class="markdown-content">
+    @Html.Raw(Markdig.Markdown.ToHtml(Model.MarkdownContent))
+</div>
