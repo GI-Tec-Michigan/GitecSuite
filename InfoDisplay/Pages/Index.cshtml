@@ -46,6 +46,10 @@
                                         @await Html.PartialAsync("_InfoBoardRssFeed", rssItem)
                                         break;
 
+                                    case InfoBoardItemApiData apiItem:
+                                        @await Html.PartialAsync("_InfoBoardApiData", apiItem)
+                                        break;
+
                                     default:
                                         <p class="text-warning">Unknown content type</p>
                                         break;

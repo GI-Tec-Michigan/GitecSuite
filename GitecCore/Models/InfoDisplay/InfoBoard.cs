@@ -99,3 +99,12 @@ public class InfoBoardItemRssFeed : InfoBoardItem
     [MaxLength(255)]
     public string RssFeedUrl { get; set; } = string.Empty;
 }
+
+public class InfoBoardItemApiData : InfoBoardItem
+{
+    public InfoBoardItemApiData(string title) : base(title)
+    {
+    }
+    public string ApiUrl { get; set; } = string.Empty;
+    public string ApiData { get; set; } = string.Empty;
+}
