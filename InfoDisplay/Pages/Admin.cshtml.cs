@@ -27,11 +27,8 @@ namespace InfoDisplay.Pages
             var infoBoards = _dbContext.InfoBoards.Include(b => b.InfoBoardItems).ToList();
             InfoBoardOptions = infoBoards.Select(ib => new SelectListItem(ib.Title, ib.Uid.ToString())).ToList();
 
-            if (infoBoards.Any())
-            {
-                SelectedInfoBoard = infoBoards.First();
-                InfoBoardItems = SelectedInfoBoard.InfoBoardItems.ToList();
-            }
+            if (infoBoards.Count == 0) return;
+            InfoBoardItems = SelectedInfoBoard.InfoBoardItems.ToList();
         }
 
         public IActionResult OnGetGetInfoBoard(Guid uid)

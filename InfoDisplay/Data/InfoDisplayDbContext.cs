@@ -48,12 +48,10 @@ public class InfoDisplayDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        if (!optionsBuilder.IsConfigured)
-        {
-            Console.WriteLine(
-                $"Connection string: {ConfigurationService.GetConnectionString()}"); // Ensure connection string is correct
-            optionsBuilder.UseSqlite($"{ConfigurationService.GetConnectionString()}"); // Ensure SQLite is configured
-        }
+        if (optionsBuilder.IsConfigured) return;
+        Console.WriteLine(
+            $"Connection string: {ConfigurationService.GetConnectionString()}"); // Ensure connection string is correct
+        optionsBuilder.UseSqlite($"{ConfigurationService.GetConnectionString()}"); // Ensure SQLite is configured
     }
 
     //

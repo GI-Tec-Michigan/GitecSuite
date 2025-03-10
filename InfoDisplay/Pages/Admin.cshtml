@@ -46,8 +46,8 @@
         <div class="form-group">
             <label asp-for="SelectedInfoBoard.CreatedAt" class="form-label">Created:</label>
             <input asp-for="SelectedInfoBoard.CreatedAt" class="form-control" id="SelectedInfoBoard_CreatedAt" />
-            <label asp-for="SelectedInfoBoard.UpdatedAt" class="form-label">Modified:</label>
             <input asp-for="SelectedInfoBoard.UpdatedAt" class="form-control" id="SelectedInfoBoard_UpdatedAt" />
+
         </div>
 
         @* ✅ SortOrder Form Field (Positive Integer Only) *@
@@ -95,19 +95,22 @@
                         url: "/Admin?handler=GetInfoBoard&uid=" + boardId,
                         type: "GET",
                         success: function (data) {
+                            console.log("Fetched InfoBoard:", data);
+
                             if (data) {
                                 $("#SelectedInfoBoard_Title").val(data.title);
                                 $("#SelectedInfoBoard_Name").val(data.name);
                                 $("#SelectedInfoBoard_SortOrder").val(data.sortOrder);
 
-                                // ✅ Update CreatedAt / UpdatedAt timestamps
+                                // ✅ Correcting timestamp assignments
                                 $("#SelectedInfoBoard_CreatedAt").val(data.createdAt);
                                 $("#SelectedInfoBoard_UpdatedAt").val(data.updatedAt);
 
-                                // ✅ Update Publish Status and Toggle Buttons
-                                updatePublishStatus(data.isPublished);
+                                // ✅ Ensure Publish Status updates
+                                $("#SelectedInfoBoard_IsPublished").prop("checked", data.isPublished);
+                                updatePublishText();
 
-                                // ✅ Update InfoBoardItems list
+                                // ✅ Update InfoBoard Items
                                 var itemsList = $("#infoBoardItems");
                                 itemsList.empty();
                                 $("#infoBoardItemCount").text(data.infoBoardItems.length);
@@ -125,7 +128,8 @@
                         }
                     });
                 }
-            });
+});
+
 
             $("#saveBtn").click(function () {
                 var boardId = $("#SelectedInfoBoard_Uid").val();
