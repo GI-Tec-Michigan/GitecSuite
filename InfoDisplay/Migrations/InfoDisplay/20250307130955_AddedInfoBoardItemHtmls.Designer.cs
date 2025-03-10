@@ -3,6 +3,7 @@ using System;
 using InfoDisplay.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InfoDisplay.Migrations.InfoDisplay
 {
     [DbContext(typeof(InfoDisplayDbContext))]
-    partial class InfoDisplayDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250307130955_AddedInfoBoardItemHtmls")]
+    partial class AddedInfoBoardItemHtmls
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.2");
@@ -125,9 +128,6 @@ namespace InfoDisplay.Migrations.InfoDisplay
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("ImageSide")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("ImageStory")
                         .IsRequired()

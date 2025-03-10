@@ -4,7 +4,7 @@ using Gitec.Utilities;
 
 namespace Gitec.Models.InfoDisplay;
 
-public abstract class InfoBoardItem : BaseEntity
+public abstract class InfoBoardItem : BaseEntity<Guid>
 {
     public InfoBoardItem(string title)
     {

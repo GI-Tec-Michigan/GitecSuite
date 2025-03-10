@@ -19,6 +19,7 @@ public class InfoDisplayDbContext : DbContext
     public DbSet<InfoBoard> InfoBoards { get; set; }
     public DbSet<InfoBoardItem> InfoBoardItems { get; set; }
     public DbSet<InfoBoardItemText> InfoBoardItemTexts { get; set; }
+    public DbSet<InfoBoardItemHtml> InfoBoardItemHtmls { get; set; }
     public DbSet<InfoBoardItemImage> InfoBoardItemImages { get; set; }
     public DbSet<InfoBoardItemVideo> InfoBoardItemVideos { get; set; }
     public DbSet<InfoBoardItemMarkdown> InfoBoardItemMarkdowns { get; set; }
@@ -35,6 +36,7 @@ public class InfoDisplayDbContext : DbContext
             .HasDiscriminator<InfoBoardItemType>(nameof(InfoBoardItem.Type))
             .HasValue<InfoBoardItem>(InfoBoardItemType.File) // Ensure unique discriminator
             .HasValue<InfoBoardItemText>(InfoBoardItemType.Text)
+            .HasValue<InfoBoardItemHtml>(InfoBoardItemType.Html)
             .HasValue<InfoBoardItemImage>(InfoBoardItemType.Image)
             .HasValue<InfoBoardItemVideo>(InfoBoardItemType.Video)
             .HasValue<InfoBoardItemMarkdown>(InfoBoardItemType.Markdown)

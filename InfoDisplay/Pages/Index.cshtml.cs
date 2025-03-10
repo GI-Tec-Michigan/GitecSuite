@@ -10,7 +10,7 @@ public class IndexModel : PageModel
     private readonly InfoDisplayDbContext _dbContext;
     public List<InfoBoard> PublishedInfoBoards { get; set; } = [];
     public InfoBoard CurrentInfoBoard { get; set; }
-    
+    public InfoDisplayConfig Config = new InfoDisplayConfig();
 
     public IndexModel(ILogger<IndexModel> logger, InfoDisplayDbContext dbContext)
     {

@@ -2,32 +2,30 @@
 @using Gitec.Models.InfoDisplay
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = @Model.Config.InfoDisplayTitle;
 }
 
-<div class="container mt-4">
+<div>
     @if (Model.PublishedInfoBoards?.Any() == true)
     {
-        <div id="infoBoardContainer" class="list-group">
+        <div id="infoBoardContainer" class="list-group" style="border: none; --bs-list-group-border-width: 0px;">
             @foreach (var board in Model.PublishedInfoBoards)
             {
                 <div class="info-board list-group-item" style="display: none;">
-                    <h3>@board.Title</h3>
-                    <small class="text-muted">Published on: @board.CreatedAt.ToString("MMM dd, yyyy")</small>
+                    <div class="board-header"><h2>@board.Title</h2></div>
 
                     <div class="list-group">
                         @foreach (var item in board.InfoBoardItems)
                         {
-                            <div class="list-group-item">
-                                <h4>@item.Title</h4>
-                                <small class="text-muted">@item.Type</small>
-                            </div>
-
                             <div>
                                 @switch (item)
                                 {
                                     case InfoBoardItemText textItem:
                                         @await Html.PartialAsync("_InfoBoardText", textItem)
+                                        break;
+                                        
+                                    case InfoBoardItemHtml htmlItem:
+                                        @await Html.PartialAsync("_InfoBoardHtml", htmlItem)
                                         break;
 
                                     case InfoBoardItemMarkdown markdownItem:
@@ -46,10 +44,6 @@
                                         @await Html.PartialAsync("_InfoBoardRssFeed", rssItem)
                                         break;
 
-                                    case InfoBoardItemApiData apiItem:
-                                        @await Html.PartialAsync("_InfoBoardApiData", apiItem)
-                                        break;
-
                                     default:
                                         <p class="text-warning">Unknown content type</p>
                                         break;
@@ -62,21 +56,41 @@
         </div>
 
         <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                let boards = document.querySelectorAll(".info-board");
-                let currentIndex = 0;
+    document.addEventListener("DOMContentLoaded", function () {
+        let boards = document.querySelectorAll(".info-board");
+        let currentIndex = 0;
+        let transitionDuration = @Model.Config.TransitionDelay; // Adjust duration dynamically
 
-                function showNextBoard() {
-                    boards.forEach((board, index) => {
-                        board.style.display = index === currentIndex ? "block" : "none";
-                    });
-                    currentIndex = (currentIndex + 1) % boards.length;
-                }
+        function showNextBoard() {
+            let previousIndex = (currentIndex - 1 + boards.length) % boards.length;
 
-                showNextBoard();
-                setInterval(showNextBoard, 5000); // Change board every 5 seconds
-            });
-        </script>
+            // Hide previous board smoothly
+            boards[previousIndex].style.opacity = "0";
+
+            setTimeout(() => {
+                boards[previousIndex].style.display = "none";
+                boards[currentIndex].style.display = "block";
+
+                // Fade in the new board
+                setTimeout(() => {
+                    boards[currentIndex].style.opacity = "1";
+                        }, @Model.Config.TransitionDuration);
+                
+                currentIndex = (currentIndex + 1) % boards.length;
+                    }, @Model.Config.TransitionDuration); // Time to complete fade out
+        }
+
+        // Initialize styles
+        boards.forEach((board, index) => {
+            board.style.transition = "opacity 0.5s ease-in-out";
+            board.style.opacity = index === 0 ? "1" : "0";
+            board.style.display = index === 0 ? "block" : "none";
+        });
+
+        setInterval(showNextBoard, transitionDuration);
+    });
+</script>
+
     }
     else
     {

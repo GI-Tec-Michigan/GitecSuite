@@ -1,5 +1,8 @@
 ﻿@using Gitec.Models.InfoDisplay
 @model InfoBoardItemMarkdown
-<div class="markdown-content">
-    @Html.Raw(Markdig.Markdown.ToHtml(Model.MarkdownContent))
+<div>
+    <H3>@Model.Title</h3>
+    <div class="markdown-content" style="font-size: 18px; text-align: justify;">
+        @Html.Raw(Markdig.Markdown.ToHtml(Model.MarkdownContent))
+    </div>
 </div>

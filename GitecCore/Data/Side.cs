@@ -1,6 +1,7 @@
 ﻿namespace Gitec.Data;
 
-public class Side
+public enum Side
 {
-    
+    Left,
+    Right
 }

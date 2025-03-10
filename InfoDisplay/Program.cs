@@ -10,16 +10,16 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        ConfigurationService.Init("InfoDisplay");
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Console()
-            .WriteTo.File(@"C:\ProgramData\Gitec\Logs\events.log", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 10)
+            .WriteTo.File(ConfigurationService.GetLogFile(), rollingInterval: RollingInterval.Day, retainedFileCountLimit: 10)
             .CreateLogger();
 
-        Log.Information("Starting GTBulletin application...");
+        Log.Information("Starting Info Display application...");
 
         try
         {
-            ConfigurationService.Init("InfoDisplay");
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.

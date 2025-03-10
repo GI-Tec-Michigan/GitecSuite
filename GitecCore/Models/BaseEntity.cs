@@ -2,16 +2,16 @@
 
 namespace Gitec.Models;
 
-public class BaseEntity
+public class BaseEntity<T>
 {
     protected BaseEntity()
     {
-        
+
     }
-    
+
     [Key]
-    public Guid Uid { get; set; } = Guid.NewGuid();
+    public T Uid { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime UpdatedAt { get; set; } = DateTime.Now;
-    
+
 }

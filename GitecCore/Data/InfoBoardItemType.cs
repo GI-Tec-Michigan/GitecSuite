@@ -7,5 +7,6 @@ public enum InfoBoardItemType
     Video,
     Markdown,
     File,
-    RssFeed
+    RssFeed,
+    Html
 }

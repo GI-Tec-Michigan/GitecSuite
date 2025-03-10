@@ -8,15 +8,14 @@
 }
 
 <div class="rss-feed">
-    <h5>RSS Feed</h5>
-    <a href="@Model.RssFeedUrl" target="_blank">@Model.RssFeedUrl</a>
+    <H3>@Model.Title</H3>
 
     @if (feedItems.Any())
     {
         <ul>
             @foreach (var item in feedItems)
             {
-                <li>
+                <li style="font-size: 18px; text-align: justify;">
                     @item.Title.Text
                 </li>
             }
@@ -24,6 +23,6 @@
     }
     else
     {
-        <p>No articles available.</p>
+        <p style ="font-size: 18px; text-align: justify;">No articles available.</p>
     }
 </div>
