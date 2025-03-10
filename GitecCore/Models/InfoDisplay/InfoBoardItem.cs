@@ -4,7 +4,7 @@ using Gitec.Utilities;
 
 namespace Gitec.Models.InfoDisplay;
 
-public abstract class InfoBoardItem : BaseEntity<Guid>
+public abstract class InfoBoardItem : BaseItem
 {
     public InfoBoardItem(string title)
     {
@@ -17,6 +17,4 @@ public abstract class InfoBoardItem : BaseEntity<Guid>
     public string Name { get; set; } = string.Empty;
     public InfoBoardItemType Type { get; set; } = InfoBoardItemType.Text;
     public int SortOrder { get; set; } = 0;
-    public bool IsPublished { get; set; } = true;
-    public bool IsArchived { get; set; } = false;
 }

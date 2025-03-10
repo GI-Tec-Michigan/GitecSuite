@@ -22,7 +22,7 @@ public class IndexModel : PageModel
 
     public void OnGet()
     {
-        PublishedInfoBoards = _dbContext.GetPublishedInfoBoards().ToList();
+        PublishedInfoBoards = _dbContext.GetInfoBoardsPublished().ToList();
         CurrentInfoBoard = PublishedInfoBoards.FirstOrDefault()!;
     }
 }

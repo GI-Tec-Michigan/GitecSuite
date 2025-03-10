@@ -21,27 +21,27 @@
                                 @switch (item)
                                 {
                                     case InfoBoardItemText textItem:
-                                        @await Html.PartialAsync("_InfoBoardText", textItem)
+                                        @await Html.PartialAsync("Shared/Display/_InfoBoardText", textItem)
                                         break;
                                         
                                     case InfoBoardItemHtml htmlItem:
-                                        @await Html.PartialAsync("_InfoBoardHtml", htmlItem)
+                                        @await Html.PartialAsync("Shared/Display/_InfoBoardHtml", htmlItem)
                                         break;
 
                                     case InfoBoardItemMarkdown markdownItem:
-                                        @await Html.PartialAsync("_InfoBoardMarkdown", markdownItem)
+                                        @await Html.PartialAsync("Shared/Display/_InfoBoardMarkdown", markdownItem)
                                         break;
 
                                     case InfoBoardItemImage imageItem:
-                                        @await Html.PartialAsync("_InfoBoardImage", imageItem)
+                                        @await Html.PartialAsync("Shared/Display/_InfoBoardImage", imageItem)
                                         break;
 
                                     case InfoBoardItemVideo videoItem:
-                                        @await Html.PartialAsync("_InfoBoardVideo", videoItem)
+                                        @await Html.PartialAsync("Shared/Display/_InfoBoardVideo", videoItem)
                                         break;
 
                                     case InfoBoardItemRssFeed rssItem:
-                                        @await Html.PartialAsync("_InfoBoardRssFeed", rssItem)
+                                        @await Html.PartialAsync("Shared/Display/_InfoBoardRssFeed", rssItem)
                                         break;
 
                                     default:

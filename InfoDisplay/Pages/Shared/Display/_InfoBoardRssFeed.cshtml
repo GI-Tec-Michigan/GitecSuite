@@ -1,0 +1,28 @@
+﻿@using System.ServiceModel.Syndication
+@using Gitec.Models.InfoDisplay
+@inject RssFeedService RssService
+@model InfoBoardItemRssFeed
+
+@{
+    var feedItems = await RssService.GetFeedItemsAsync(Model.RssFeedUrl, 3);
+}
+
+<div class="rss-feed">
+    <H3>@Model.Title</H3>
+
+    @if (feedItems.Any())
+    {
+        <ul>
+            @foreach (var item in feedItems)
+            {
+                <li style="font-size: 18px; text-align: justify;">
+                    @item.Title.Text
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p style ="font-size: 18px; text-align: justify;">No articles available.</p>
+    }
+</div>

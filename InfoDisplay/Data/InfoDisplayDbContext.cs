@@ -1,8 +1,11 @@
 ﻿using Gitec.Data;
-using Gitec.Models;
 using Gitec.Models.InfoDisplay;
 using Gitec.Services;
 using Microsoft.EntityFrameworkCore;
+
+// dotnet ef migrations add UpdateDbe --context InfoDisplayDbContext --output-dir Migrations/InfoDisplay
+// dotnet ef database update --context InfoDisplayDbContext
+
 
 namespace InfoDisplay.Data;
 
@@ -53,54 +56,96 @@ public class InfoDisplayDbContext : DbContext
         }
     }
 
-    public override int SaveChanges()
-    {
-        UpdateTimestamps();
-        return base.SaveChanges();
-    }
-
-    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        UpdateTimestamps();
-        return await base.SaveChangesAsync(cancellationToken);
-    }
-
-    private void UpdateTimestamps()
-    {
-        var entries = ChangeTracker.Entries<BaseEntity>()
-            .Where(e => e.State == EntityState.Modified);
-
-        foreach (var entry in entries)
-        {
-            entry.Entity.UpdatedAt = DateTime.UtcNow;
-        }
-    }
-
     //
-    public List<InfoBoard> GetPublishedInfoBoards()
+
+    private IQueryable<InfoBoard> getInfoBoardsQry()
     {
         return InfoBoards
-            .Where(i => i.IsPublished)
-            .OrderBy(i => i.SortOrder)
-            .ToList();
+            .OrderBy(b => b.SortOrder);
     }
+
+    private IEnumerable<InfoBoard> getInfoBoards() =>
+        getInfoBoardsQry().Where(x => x.IsDeleted == false);
+
+    public List<InfoBoard> GetInfoBoardsPublished() =>
+        getInfoBoards()
+            .Where(b => b.IsPublished)
+            .OrderBy(b => b.SortOrder)
+            .ToList();
+
+    public List<InfoBoard> GetInfoBoardsAll() =>
+        getInfoBoards()
+            .OrderBy(b => b.SortOrder)
+            .ToList();
+
+    public InfoBoard GetInfoBoard(InfoBoard board) =>
+        GetInfoBoard(board.Uid);
 
     public InfoBoard GetInfoBoard(Guid Uid) =>
         InfoBoards.FirstOrDefault(i => i.Uid == Uid) ?? throw new InvalidOperationException();
 
-    public List<InfoBoardItem> GetPublishedInfoBoardItems(InfoBoard board)
+    public InfoBoard GetInfoBoard(string name) =>
+        InfoBoards.FirstOrDefault(i => i.Name == name) ?? throw new InvalidOperationException();
+
+
+    //
+
+    private IQueryable<InfoBoardItem> getInfoBoardItemsQry()
     {
-        return GetPublishedInfoBoardItems(board.Uid);
+        return InfoBoardItems
+            .OrderBy(b => b.SortOrder);
     }
 
-    public List<InfoBoardItem> GetPublishedInfoBoardItems(Guid boardUid)
-    {
-        return GetInfoBoard(boardUid).InfoBoardItems
-            .Where(i => i.IsPublished)
-            .OrderBy(i => i.SortOrder)
+    private IEnumerable<InfoBoardItem> getInfoBoardItems() =>
+        getInfoBoardItemsQry().Where(x => x.IsDeleted == false);
+
+    public List<InfoBoardItem> GetInfoBoardItemsPublished() =>
+        getInfoBoardItems()
+            .Where(b => b.IsPublished)
+            .OrderBy(b => b.SortOrder)
             .ToList();
+
+    public List<InfoBoardItem> GetInfoBoardItemsAll() =>
+        getInfoBoardItems()
+            .OrderBy(b => b.SortOrder)
+            .ToList();
+
+    public InfoBoardItem GetInfoBoardItem(InfoBoardItem item) =>
+        GetInfoBoardItem(item.Uid);
+
+    public InfoBoardItem GetInfoBoardItem(Guid Uid) =>
+        InfoBoardItems.FirstOrDefault(i => i.Uid == Uid) ?? throw new InvalidOperationException();
+
+    public InfoBoardItem GetInfoBoardItem(string name) =>
+        InfoBoardItems.FirstOrDefault(i => i.Name == name) ?? throw new InvalidOperationException();
+
+    public List<InfoBoardItem> GetInfoBoardItemsByBoard(InfoBoard board) =>
+        board.InfoBoardItems.ToList();
+
+    public List<InfoBoardItem> GetInfoBoardItemsByBoard(Guid Uid) =>
+        GetInfoBoard(Uid).InfoBoardItems.ToList();
+
+    public List<InfoBoardItem> GetInfoBoardItemsByBoard(string name) =>
+        GetInfoBoard(name).InfoBoardItems.ToList();
+
+    //
+
+    public void SaveInfoBoard(InfoBoard board)
+    {
+        if (board.Uid == Guid.Empty)
+        {
+            InfoBoards.Add(board);
+        }
+        else
+        {
+            InfoBoards.Update(board);
+        }
+        SaveChanges();
     }
 
+
+
+    #region Seed Data
 
     public void SeedData(bool force = false)
     {
@@ -165,4 +210,33 @@ public class InfoDisplayDbContext : DbContext
             SaveChanges();
         }
     }
+
+    #endregion
+
+    #region Overrides
+
+    public override int SaveChanges()
+    {
+        UpdateTimestamps();
+        return base.SaveChanges();
+    }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        UpdateTimestamps();
+        return await base.SaveChangesAsync(cancellationToken);
+    }
+
+    private void UpdateTimestamps()
+    {
+        var entries = ChangeTracker.Entries<BaseItem>()
+            .Where(e => e.State == EntityState.Modified);
+
+        foreach (var entry in entries)
+        {
+            entry.Entity.UpdatedAt = DateTime.UtcNow;
+        }
+    }
+
+    #endregion
 }

@@ -1,0 +1,15 @@
+﻿@using Gitec.Models.InfoDisplay
+@model InfoBoardItemVideo
+<div class="d-flex align-items-start">
+    <div class="video-container text-center me-3">
+        <video controls class="w-100">
+            <source src="@Model.VideoSource" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        @if (!string.IsNullOrEmpty(Model.VideoCaption))
+        {
+            <p class="text-muted">@Model.VideoCaption</p>
+        }
+    </div>
+    <p style="font-size: 18px; text-align: justify;">@Model.VideoStory</p>
+</div>

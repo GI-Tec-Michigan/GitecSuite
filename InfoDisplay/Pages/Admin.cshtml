@@ -4,3 +4,155 @@
     ViewData["Title"] = "Admin";
 }
 
+<div>
+    <h1>Admin</h1>
+
+    <form method="post">
+        @* Dropdown to select an InfoBoard *@
+        <div class="form-group">
+            <label asp-for="SelectedInfoBoard.Uid" class="form-label">Select an InfoBoard:</label>
+            <select asp-for="SelectedInfoBoard.Uid" asp-items="Model.InfoBoardOptions" class="form-select" id="SelectedInfoBoard_Uid">
+                <option value="">-- Select an InfoBoard --</option>
+            </select>
+            <span asp-validation-for="SelectedInfoBoard.Uid" class="text-danger"></span>
+        </div>
+
+        <hr />
+
+        @* InfoBoard Properties *@
+        <div class="form-group">
+            <label asp-for="SelectedInfoBoard.Title" class="form-label">Title:</label>
+            <input asp-for="SelectedInfoBoard.Title" class="form-control" id="SelectedInfoBoard_Title" />
+            <span asp-validation-for="SelectedInfoBoard.Title" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="SelectedInfoBoard.Name" class="form-label">Description:</label>
+            <textarea asp-for="SelectedInfoBoard.Name" class="form-control" id="SelectedInfoBoard_Name"></textarea>
+            <span asp-validation-for="SelectedInfoBoard.Name" class="text-danger"></span>
+        </div>
+
+        @* Publish Toggle *@
+        <div class="form-group">
+            <label asp-for="SelectedInfoBoard.IsPublished" class="form-label">Publish Status:</label>
+            <div class="form-check form-switch">
+                <input type="checkbox" asp-for="SelectedInfoBoard.IsPublished" class="form-check-input" id="SelectedInfoBoard_IsPublished" />
+                <label class="form-check-label" for="SelectedInfoBoard_IsPublished" id="publishStatusLabel">Unpublished</label>
+            </div>
+            <span asp-validation-for="SelectedInfoBoard.IsPublished" class="text-danger"></span>
+        </div>
+
+        @* ✅ Display CreatedAt / UpdatedAt *@
+        <div class="form-group">
+            <label asp-for="SelectedInfoBoard.CreatedAt" class="form-label">Created:</label>
+            <input asp-for="SelectedInfoBoard.CreatedAt" class="form-control" id="SelectedInfoBoard_CreatedAt" />
+            <label asp-for="SelectedInfoBoard.UpdatedAt" class="form-label">Modified:</label>
+            <input asp-for="SelectedInfoBoard.UpdatedAt" class="form-control" id="SelectedInfoBoard_UpdatedAt" />
+        </div>
+
+        @* ✅ SortOrder Form Field (Positive Integer Only) *@
+        <div class="form-group">
+            <label asp-for="SelectedInfoBoard.SortOrder" class="form-label">Sort Order:</label>
+            <input type="number" asp-for="SelectedInfoBoard.SortOrder" class="form-control" id="SelectedInfoBoard_SortOrder" min="1" />
+            <span asp-validation-for="SelectedInfoBoard.SortOrder" class="text-danger"></span>
+        </div>
+
+        <hr />
+
+        @* InfoBoard Items Section *@
+        <h2>InfoBoard Items - <span id="infoBoardItemCount">0</span></h2>
+        <ul id="infoBoardItems" class="list-group"></ul>
+        <hr />
+
+        @* Save Button *@
+        <div class="form-group mt-3">
+            <button type="submit" class="btn btn-primary" id="saveBtn">Save</button>
+        </div>
+
+    </form>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            function updatePublishText() {
+                $("#publishStatusLabel").text($("#SelectedInfoBoard_IsPublished").prop("checked") ? "Published" : "Unpublished");
+            }
+
+            $("#SelectedInfoBoard_IsPublished").change(function () {
+                updatePublishText();
+            });
+
+            // Initialize on page load
+            updatePublishText();
+
+            $("#SelectedInfoBoard_Uid").change(function () {
+                var boardId = $(this).val();
+                if (boardId) {
+                    $.ajax({
+                        url: "/Admin?handler=GetInfoBoard&uid=" + boardId,
+                        type: "GET",
+                        success: function (data) {
+                            if (data) {
+                                $("#SelectedInfoBoard_Title").val(data.title);
+                                $("#SelectedInfoBoard_Name").val(data.name);
+                                $("#SelectedInfoBoard_SortOrder").val(data.sortOrder);
+
+                                // ✅ Update CreatedAt / UpdatedAt timestamps
+                                $("#SelectedInfoBoard_CreatedAt").val(data.createdAt);
+                                $("#SelectedInfoBoard_UpdatedAt").val(data.updatedAt);
+
+                                // ✅ Update Publish Status and Toggle Buttons
+                                updatePublishStatus(data.isPublished);
+
+                                // ✅ Update InfoBoardItems list
+                                var itemsList = $("#infoBoardItems");
+                                itemsList.empty();
+                                $("#infoBoardItemCount").text(data.infoBoardItems.length);
+                                if (data.infoBoardItems.length > 0) {
+                                    data.infoBoardItems.forEach(function (item) {
+                                        itemsList.append("<li class='list-group-item'>" + item.name + " - " + item.uid + "</li>");
+                                    });
+                                } else {
+                                    itemsList.append("<p class='text-muted'>No items available for this InfoBoard.</p>");
+                                }
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error fetching InfoBoard:", error);
+                        }
+                    });
+                }
+            });
+
+            $("#saveBtn").click(function () {
+                var boardId = $("#SelectedInfoBoard_Uid").val();
+                if (boardId) {
+                    var data = {
+                        uid: boardId,
+                        title: $("#SelectedInfoBoard_Title").val(),
+                        name: $("#SelectedInfoBoard_Name").val(),
+                        sortOrder: $("#SelectedInfoBoard_SortOrder").val(),
+                        isPublished: $("#SelectedInfoBoard_IsPublished").prop("checked")
+                    };
+                    $.ajax({
+                        url: "/Admin?handler=SaveInfoBoard",
+                        type: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify(data),
+                        success: function (data) {
+                            if (data) {
+                                alert("InfoBoard saved successfully.");
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error saving InfoBoard:", error);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}
