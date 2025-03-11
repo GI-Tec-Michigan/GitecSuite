@@ -1,5 +1,7 @@
-﻿using Gitec.Utilities;
+﻿using Gitec.ExceptionHandling;
+using Gitec.Utilities;
 using Newtonsoft.Json;
+using System.Runtime.InteropServices;
 
 namespace Gitec.Services;
 
@@ -13,88 +15,121 @@ public static class ConfigurationService
     private static string? AppName { get; set; }
     private static string? DatabaseFile { get; set; }
 
-    
+
     public static string GetAppName()
     {
-        if(!IsInitialized)
-            throw new ArgumentNullException(nameof(AppName));
+        if (!IsInitialized)
+            throw new ConfigurationException("Configuration is not initialized. AppName is not set.");
         return AppName!;
     }
-    
+
     public static string GetBasePath()
     {
-        if(!IsInitialized)
-            throw new ArgumentNullException(nameof(AppName));
+        if (!IsInitialized)
+            throw new ConfigurationException("Configuration is not initialized. BasePath is not set.");
         return BasePath!;
     }
-    
+
     public static string GetLogPath()
     {
-        if(!IsInitialized)
-            throw new ArgumentNullException(nameof(AppName));
+        if (!IsInitialized)
+            throw new ConfigurationException("Configuration is not initialized. LogPath is not set.");
         return LogPath!;
     }
-    
+
     public static string GetLogFile()
     {
-        if(!IsInitialized)
-            throw new ArgumentNullException(nameof(AppName));
+        if (!IsInitialized)
+            throw new ConfigurationException("Configuration is not initialized. LogFile is not set.");
         return LogFile!;
     }
-    
+
     public static string GetDatabasePath()
     {
-        if(!IsInitialized)
-            throw new ArgumentNullException(nameof(AppName));
+        if (!IsInitialized)
+            throw new ConfigurationException("Configuration is not initialized. DatabasePath is not set.");
         return DatabasePath!;
     }
-    
+
     public static string GetDatabaseFile()
     {
-        if(!IsInitialized)
-            throw new ArgumentNullException(nameof(AppName));
+        if (!IsInitialized)
+            throw new ConfigurationException("Configuration is not initialized. DatabaseFile is not set.");
         return DatabaseFile!;
     }
-    
+
     public static string GetConnectionString()
     {
-        if(!IsInitialized)
-            throw new ArgumentNullException(nameof(AppName));
+        if (!IsInitialized)
+            throw new ConfigurationException("Configuration is not initialized. DatabaseFile is not set.");
         return $"Data Source={DatabaseFile}";
     }
-    
+
     public static void Init(string appName)
     {
-        if(string.IsNullOrEmpty(appName))
-            throw new ArgumentNullException(nameof(appName));
-        AppName = appName;
-        Console.WriteLine($"{AppName} Configuration Service Init");
-        BasePath = getBasePath();
-        LogPath = Path.Combine(BasePath, "Logs");
-        LogFile = Path.Combine(LogPath, "events.log");
-        DatabasePath = Path.Combine(BasePath, "Data");
-        DatabaseFile = Path.Combine(DatabasePath, $"{AppName}Db.sqlite");
-        
-        FileDirectoryHelper.CreateDirectory(BasePath);
-        FileDirectoryHelper.CreateDirectory(DatabasePath);
-        FileDirectoryHelper.CreateDirectory(LogPath);
-        FileDirectoryHelper.CreateFile(LogFile);
+        try { 
 
-        IsInitialized = true;
-        Console.WriteLine($"{AppName} Configuration Service Init Complete");
-    }
-    
-    private static string getBasePath()
-    {
-        return (Environment.OSVersion.Platform switch
+            if(string.IsNullOrEmpty(appName))
+                throw new ArgumentNullException(nameof(appName));
+            AppName = appName;
+            Console.WriteLine($"{AppName} Configuration Service Init");
+            BasePath = GetBasePathInternal();
+            LogPath = Path.Combine(BasePath, "Logs");
+            LogFile = Path.Combine(LogPath, "events.log");
+            DatabasePath = Path.Combine(BasePath, "Data");
+            DatabaseFile = Path.Combine(DatabasePath, $"{AppName}Db.sqlite");
+        
+            FileDirectoryHelper.CreateDirectory(BasePath);
+            FileDirectoryHelper.CreateDirectory(DatabasePath);
+            FileDirectoryHelper.CreateDirectory(LogPath);
+            FileDirectoryHelper.CreateFile(LogFile);
+
+            IsInitialized = true;
+            Console.WriteLine($"{AppName} Configuration Service Init Complete");
+        }
+        catch (Exception ex)
         {
-            // is application running on windows or linux
-            PlatformID.Win32NT => 
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "GitecSuite", $"GitecSuite.{AppName}"),
-            PlatformID.Unix => 
-                Path.Combine("/var/lib/", "GitecSuite", $"GitecSuite.{AppName}"),
-            _ => throw new PlatformNotSupportedException()
-        })!;
+            // Optionally log the exception here before rethrowing.
+            throw new ConfigurationException("Failed to initialize configuration service.", ex);
+        }
+    }
+
+    private static string GetBasePathInternal()
+    {
+        try
+        {
+            // Determine the base path based on the operating system.
+            string basePath = Environment.OSVersion.Platform switch
+            {
+                // Windows: Use the common application data folder.
+                PlatformID.Win32NT => Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                    CoreConstants.CoreName,
+                    $"{CoreConstants.CoreName}.{AppName}"
+                ),
+
+                // Unix: Check if macOS or Linux.
+                PlatformID.Unix when RuntimeInformation.IsOSPlatform(OSPlatform.OSX) =>
+                    Path.Combine("/usr/local/var", CoreConstants.CoreName, $"{CoreConstants.CoreName}.{AppName}"),
+                PlatformID.Unix =>
+                    Path.Combine("/var/lib", CoreConstants.CoreName, $"{CoreConstants.CoreName}.{AppName}"),
+
+                // Unsupported platform.
+                _ => throw new PlatformNotSupportedException("The current operating system is not supported.")
+            };
+
+            // Create the directory if it doesn't exist.
+            if (!Directory.Exists(basePath))
+            {
+                Directory.CreateDirectory(basePath);
+            }
+
+            return basePath;
+        }
+        catch (Exception ex)
+        {
+            throw new ConfigurationException("Error while determining the base path.", ex);
+        }
     }
 }
 
