@@ -14,7 +14,30 @@ public static class ConfigurationService
     private static string? DatabasePath { get; set; }
     private static string? AppName { get; set; }
     private static string? DatabaseFile { get; set; }
+    
+    private static string? TempPath { get; set; }
+    private static string? UploadPath { get; set; }
+    private static string? AssetsPath { get; set; }
 
+    private static string? GetAssetsPath()
+    {
+        if (!IsInitialized)
+            throw new ConfigurationException("Configuration is not initialized. AssetsPath is not set.");
+        return AssetsPath!;
+    }
+
+    private static string? GetUploadPath()
+    {
+        if (!IsInitialized)
+            throw new ConfigurationException("Configuration is not initialized. UploadPath is not set.");
+        return UploadPath!;
+    }
+    public static string GetTempPath()
+    {
+        if (!IsInitialized)
+            throw new ConfigurationException("Configuration is not initialized. FilePath is not set.");
+        return TempPath!;
+    }
 
     public static string GetAppName()
     {
@@ -65,27 +88,33 @@ public static class ConfigurationService
         return $"Data Source={DatabaseFile}";
     }
 
-    public static void Init(string appName)
+    public static void Initialize(string appName)
     {
         try { 
 
             if(string.IsNullOrEmpty(appName))
                 throw new ArgumentNullException(nameof(appName));
             AppName = appName;
-            Console.WriteLine($"{AppName} Configuration Service Init");
+            Console.WriteLine($"{AppName} Configuration Service Initialize");
             BasePath = GetBasePathInternal();
             LogPath = Path.Combine(BasePath, "Logs");
             LogFile = Path.Combine(LogPath, "events.log");
             DatabasePath = Path.Combine(BasePath, "Data");
             DatabaseFile = Path.Combine(DatabasePath, $"{AppName}Db.sqlite");
+            TempPath = Path.Combine(BasePath, "Temp");
+            UploadPath = Path.Combine(BasePath, "Uploads");
+            AssetsPath = Path.Combine(BasePath, "Assets");
         
             FileDirectoryHelper.CreateDirectory(BasePath);
             FileDirectoryHelper.CreateDirectory(DatabasePath);
             FileDirectoryHelper.CreateDirectory(LogPath);
             FileDirectoryHelper.CreateFile(LogFile);
+            FileDirectoryHelper.CreateDirectory(TempPath);
+            FileDirectoryHelper.CreateDirectory(UploadPath);
+            FileDirectoryHelper.CreateDirectory(AssetsPath);
 
             IsInitialized = true;
-            Console.WriteLine($"{AppName} Configuration Service Init Complete");
+            Console.WriteLine($"{AppName} Configuration Service Initialize Complete");
         }
         catch (Exception ex)
         {
