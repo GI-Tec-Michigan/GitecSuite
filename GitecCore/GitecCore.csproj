@@ -33,13 +33,15 @@
         <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.1-dev-02308" />
         <PackageReference Include="Serilog.Sinks.Console" Version="6.0.1-dev-00953" />
         <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.7" />
         <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
         <!-- Graph API -->
         <PackageReference Include="Microsoft.Graph" Version="5.70.0" />
         <PackageReference Include="Microsoft.Graph.Core" Version="3.2.3" />
         <PackageReference Include="Microsoft.Identity.Client" Version="4.68.0" />
 		<!-- Rss -->
-		<PackageReference Include="System.ServiceModel.Syndication" Version="9.0.2" />
+        <PackageReference Include="System.ServiceModel.Syndication" Version="9.0.2" />
+        <PackageReference Include="ZXing.Net" Version="0.16.10" />
 	
 	</ItemGroup>
 
