@@ -14,7 +14,6 @@ public static class ConfigurationService
     private static string? DatabasePath { get; set; }
     private static string? AppName { get; set; }
     private static string? DatabaseFile { get; set; }
-    
     private static string? TempPath { get; set; }
     private static string? UploadPath { get; set; }
     private static string? AssetsPath { get; set; }
@@ -22,55 +21,55 @@ public static class ConfigurationService
     private static string? GetAssetsPath()
     {
         if (!IsInitialized)
-            throw new ConfigurationException("Configuration is not initialized. AssetsPath is not set.");
+            throw new ConfigurationException("Configuration is not initialized. Assets Path is not set.");
         return AssetsPath!;
     }
 
     private static string? GetUploadPath()
     {
         if (!IsInitialized)
-            throw new ConfigurationException("Configuration is not initialized. UploadPath is not set.");
+            throw new ConfigurationException("Configuration is not initialized. Upload Path is not set.");
         return UploadPath!;
     }
     public static string GetTempPath()
     {
         if (!IsInitialized)
-            throw new ConfigurationException("Configuration is not initialized. FilePath is not set.");
+            throw new ConfigurationException("Configuration is not initialized. File Path is not set.");
         return TempPath!;
     }
 
     public static string GetAppName()
     {
         if (!IsInitialized)
-            throw new ConfigurationException("Configuration is not initialized. AppName is not set.");
+            throw new ConfigurationException("Configuration is not initialized. App Name is not set.");
         return AppName!;
     }
 
     public static string GetBasePath()
     {
         if (!IsInitialized)
-            throw new ConfigurationException("Configuration is not initialized. BasePath is not set.");
+            throw new ConfigurationException("Configuration is not initialized. Base Path is not set.");
         return BasePath!;
     }
 
     public static string GetLogPath()
     {
         if (!IsInitialized)
-            throw new ConfigurationException("Configuration is not initialized. LogPath is not set.");
+            throw new ConfigurationException("Configuration is not initialized. Log Path is not set.");
         return LogPath!;
     }
 
     public static string GetLogFile()
     {
         if (!IsInitialized)
-            throw new ConfigurationException("Configuration is not initialized. LogFile is not set.");
+            throw new ConfigurationException("Configuration is not initialized. Log File is not set.");
         return LogFile!;
     }
 
     public static string GetDatabasePath()
     {
         if (!IsInitialized)
-            throw new ConfigurationException("Configuration is not initialized. DatabasePath is not set.");
+            throw new ConfigurationException("Configuration is not initialized. Database Path is not set.");
         return DatabasePath!;
     }
 
@@ -84,7 +83,7 @@ public static class ConfigurationService
     public static string GetConnectionString()
     {
         if (!IsInitialized)
-            throw new ConfigurationException("Configuration is not initialized. DatabaseFile is not set.");
+            throw new ConfigurationException("Configuration is not initialized. Database Connection is not set.");
         return $"Data Source={DatabaseFile}";
     }
 
