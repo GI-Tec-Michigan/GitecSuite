@@ -1,3 +1,4 @@
+using Gitec.InfoDisplay.Services;
 using Gitec.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,7 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        ConfigurationService.Init("InfoDisplay");
+        ConfigurationService.Initialize("InfoDisplay");
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Console()
             .WriteTo.File(ConfigurationService.GetLogFile(), rollingInterval: RollingInterval.Day, retainedFileCountLimit: 10)
@@ -34,6 +35,13 @@ public class Program
             builder.Services.AddHttpClient<RssFeedService>();
 
             builder.Services.AddScoped<InfoDisplayDbContext>();
+            
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                options.ListenAnyIP(5184); // Default HTTP
+                options.ListenAnyIP(5001, listenOptions => listenOptions.UseHttps()); // Default HTTPS
+            });
+            
 
 
             var app = builder.Build();

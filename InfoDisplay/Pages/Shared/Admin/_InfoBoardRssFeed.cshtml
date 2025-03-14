@@ -1,28 +1,33 @@
 ﻿@using System.ServiceModel.Syndication
-@using Gitec.Models.InfoDisplay
+@using Gitec.Services
 @inject RssFeedService RssService
-@model InfoBoardItemRssFeed
+@model Gitec.InfoDisplay.Models.InfoBoardItemRssFeed
 
 @{
     var feedItems = await RssService.GetFeedItemsAsync(Model.RssFeedUrl, 3);
 }
 
-<div class="rss-feed">
-    <H3>@Model.Title</H3>
+<form asp-action="Save" method="post">
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label">Feed Title</label>
+        <input asp-for="Title" class="form-control" required />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
 
-    @if (feedItems.Any())
-    {
-        <ul>
-            @foreach (var item in feedItems)
-            {
-                <li style="font-size: 18px; text-align: justify;">
-                    @item.Title.Text
-                </li>
-            }
-        </ul>
-    }
-    else
-    {
-        <p style ="font-size: 18px; text-align: justify;">No articles available.</p>
-    }
-</div>
+    <div class="mb-3">
+        <label asp-for="RssFeedUrl" class="form-label">RSS Feed URL</label>
+        <input asp-for="RssFeedUrl" type="url" class="form-control" required />
+        <span asp-validation-for="RssFeedUrl" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="MaxArticles" class="form-label">Number of Articles</label>
+        <input asp-for="MaxArticles" type="number" class="form-control" min="1" max="10" required />
+        <span asp-validation-for="MaxArticles" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>

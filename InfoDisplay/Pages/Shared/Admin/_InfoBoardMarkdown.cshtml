@@ -1,8 +1,58 @@
-﻿@using Gitec.Models.InfoDisplay
-@model InfoBoardItemMarkdown
-<div>
-    <H3>@Model.Title</h3>
-    <div class="markdown-content" style="font-size: 18px; text-align: justify;">
-        @Html.Raw(Markdig.Markdown.ToHtml(Model.MarkdownContent))
+﻿@model Gitec.InfoDisplay.Models.InfoBoardItemMarkdown
+
+<form asp-action="Save" method="post">
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label">Title</label>
+        <input asp-for="Title" class="form-control" required />
+        <span asp-validation-for="Title" class="text-danger"></span>
     </div>
-</div>
+
+    <div class="mb-3">
+        <label asp-for="MarkdownContent" class="form-label">Markdown Content</label>
+        <textarea asp-for="MarkdownContent" id="markdown-editor" class="form-control" rows="10" required></textarea>
+        <span asp-validation-for="MarkdownContent" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Preview</label>
+        <div id="markdown-preview" class="p-3 border rounded" style="min-height: 200px; background-color: #f8f9fa;"></div>
+    </div>
+
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplemde/dist/simplemde.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/simplemde/dist/simplemde.min.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var simplemde = new SimpleMDE({ 
+                element: document.getElementById("markdown-editor"),
+                spellChecker: false,
+                autosave: { enabled: true, uniqueId: "markdown-editor", delay: 1000 },
+                previewRender: function(plainText) {
+                    return marked(plainText); // Convert Markdown to HTML
+                }
+            });
+
+            function updatePreview() {
+                let markdownText = simplemde.value();
+                let previewElement = document.getElementById("markdown-preview");
+                previewElement.innerHTML = marked(markdownText);
+                Prism.highlightAll(); // Apply syntax highlighting
+            }
+
+            simplemde.codemirror.on("change", updatePreview);
+            updatePreview();
+        });
+    </script>
+}

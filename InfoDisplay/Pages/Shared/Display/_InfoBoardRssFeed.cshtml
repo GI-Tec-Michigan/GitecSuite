@@ -1,7 +1,7 @@
 ﻿@using System.ServiceModel.Syndication
-@using Gitec.Models.InfoDisplay
+@using Gitec.Services
 @inject RssFeedService RssService
-@model InfoBoardItemRssFeed
+@model Gitec.InfoDisplay.Models.InfoBoardItemRssFeed
 
 @{
     var feedItems = await RssService.GetFeedItemsAsync(Model.RssFeedUrl, 3);

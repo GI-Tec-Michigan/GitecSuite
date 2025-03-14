@@ -1,6 +1,24 @@
-﻿@using Gitec.Models.InfoDisplay
-@model InfoBoardItemHtml
-<div>
-    <H3>@Model.Title</H3>
-    <p style="font-size: 18px; text-align: justify;">@Model.HtmlContent</p>
-</div>
+﻿@model Gitec.InfoDisplay.Models.InfoBoardItemHtml
+
+<form asp-action="Save" method="post">
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label">Title</label>
+        <input asp-for="Title" class="form-control" required />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="HtmlContent" class="form-label">HTML Content</label>
+        <textarea asp-for="HtmlContent" class="form-control" rows="5" required></textarea>
+        <span asp-validation-for="HtmlContent" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

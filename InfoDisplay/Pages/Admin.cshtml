@@ -59,9 +59,10 @@
 
         <hr />
 
-        @* InfoBoard Items Section *@
-        <h2>InfoBoard Items - <span id="infoBoardItemCount">0</span></h2>
+        @* InfoBoard BaseItems Section *@
+        <h2>InfoBoard BaseItems - <span id="infoBoardItemCount">0</span></h2>
         <ul id="infoBoardItems" class="list-group"></ul>
+        
         <hr />
 
         @* Save Button *@
@@ -110,12 +111,12 @@
                                 $("#SelectedInfoBoard_IsPublished").prop("checked", data.isPublished);
                                 updatePublishText();
 
-                                // ✅ Update InfoBoard Items
-                                var itemsList = $("#infoBoardItems");
+                                // ✅ Update InfoBoard BaseItems
+                                var itemsList = $("#infoBoardBaseItems");
                                 itemsList.empty();
-                                $("#infoBoardItemCount").text(data.infoBoardItems.length);
-                                if (data.infoBoardItems.length > 0) {
-                                    data.infoBoardItems.forEach(function (item) {
+                                $("#infoBoardBaseItemCount").text(data.infoBoardBaseItems.length);
+                                if (data.infoBoardBaseItems.length > 0) {
+                                    data.infoBoardBaseItems.forEach(function (item) {
                                         itemsList.append("<li class='list-group-item'>" + item.name + " - " + item.uid + "</li>");
                                     });
                                 } else {

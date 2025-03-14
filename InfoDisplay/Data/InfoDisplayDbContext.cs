@@ -1,12 +1,13 @@
-﻿using Gitec.Data;
-using Gitec.Models.InfoDisplay;
-using Gitec.Services;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Gitec.ExceptionHandling;
+using Gitec.GitecBulletin.Enums;
+using Gitec.InfoDisplay.Models;
+using Gitec.InfoDisplay.Services;
 
 namespace InfoDisplay.Data
 {
@@ -145,14 +146,14 @@ namespace InfoDisplay.Data
                     };
 
 
-                    var textItem = new InfoBoardItemText($"Text Item - {i}")
+                    var textItem = new InfoBoardItemText($"Text BaseItem - {i}")
                     {
                         SortOrder = 2,
                         TextContent = "This is a text item"
                     };
                     board.InfoBoardItems.Add(textItem);
 
-                    var imageItem = new InfoBoardItemImage($"Image Item - {i}")
+                    var imageItem = new InfoBoardItemImage($"Image BaseItem - {i}")
                     {
                         SortOrder = 3,
                         ImageUrl = "https://amplifyingperformance.com/wp-content/uploads/2023/07/img-balancing-school-sports-768x439.jpg",
@@ -162,14 +163,14 @@ namespace InfoDisplay.Data
                     };
                     board.InfoBoardItems.Add(imageItem);
 
-                    var markdownItem = new InfoBoardItemMarkdown($"Markdown Item - {i}")
+                    var markdownItem = new InfoBoardItemMarkdown($"Markdown BaseItem - {i}")
                     {
                         SortOrder = 4,
                         MarkdownContent = "# This is a markdown item\n\nThis is a paragraph"
                     };
                     board.InfoBoardItems.Add(markdownItem);
 
-                    var rssFeedItem = new InfoBoardItemRssFeed($"RssFeed Item - {i}")
+                    var rssFeedItem = new InfoBoardItemRssFeed($"RssFeed BaseItem - {i}")
                     {
                         SortOrder = 5,
                         RssFeedUrl = "https://www.nasa.gov/rss/dyn/breaking_news.rss"

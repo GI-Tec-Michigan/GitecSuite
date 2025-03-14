@@ -1,15 +1,63 @@
-﻿@using Gitec.Models.InfoDisplay
-@model InfoBoardItemVideo
-<div class="d-flex align-items-start">
-    <div class="video-container text-center me-3">
-        <video controls class="w-100">
-            <source src="@Model.VideoSource" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
-        @if (!string.IsNullOrEmpty(Model.VideoCaption))
-        {
-            <p class="text-muted">@Model.VideoCaption</p>
-        }
+﻿@model Gitec.InfoDisplay.Models.InfoBoardItemVideo
+
+<form asp-action="Save" method="post">
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label">Title</label>
+        <input asp-for="Title" class="form-control" required />
+        <span asp-validation-for="Title" class="text-danger"></span>
     </div>
-    <p style="font-size: 18px; text-align: justify;">@Model.VideoStory</p>
-</div>
+
+    <div class="mb-3">
+        <label asp-for="VideoSource" class="form-label">Video URL</label>
+        <input asp-for="VideoSource" type="url" class="form-control" required />
+        <span asp-validation-for="VideoSource" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="VideoCaption" class="form-label">Video Caption (optional)</label>
+        <input asp-for="VideoCaption" class="form-control" />
+        <span asp-validation-for="VideoCaption" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="VideoStory" class="form-label">Video Story</label>
+        <textarea asp-for="VideoStory" class="form-control" rows="4" required></textarea>
+        <span asp-validation-for="VideoStory" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3 text-center">
+        <label class="form-label">Video Preview</label>
+        <div id="video-preview" class="border rounded p-3" style="background-color: #f8f9fa;">
+            <video id="preview-player" class="w-100" controls>
+                <source id="preview-video-source" src="" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let videoInput = document.getElementById("VideoSource");
+            let videoPreview = document.getElementById("preview-video-source");
+            let videoPlayer = document.getElementById("preview-player");
+
+            function updatePreview() {
+                let url = videoInput.value;
+                if (url.trim() !== "") {
+                    videoPreview.src = url;
+                    videoPlayer.load();
+                }
+            }
+
+            videoInput.addEventListener("input", updatePreview);
+            updatePreview();
+        });
+    </script>
+}

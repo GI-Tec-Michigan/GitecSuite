@@ -1,4 +1,4 @@
-using Gitec.Models.InfoDisplay;
+using Gitec.InfoDisplay.Models;
 using InfoDisplay.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

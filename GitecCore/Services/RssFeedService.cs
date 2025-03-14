@@ -1,6 +1,8 @@
 ﻿using System.ServiceModel.Syndication;
 using System.Xml;
 
+namespace Gitec.Services;
+
 public class RssFeedService
 {
     private readonly HttpClient _httpClient;

@@ -156,6 +156,9 @@ namespace InfoDisplay.Migrations.InfoDisplay
                 {
                     b.HasBaseType("Gitec.Models.InfoDisplay.InfoBoardItem");
 
+                    b.Property<int>("MaxArticles")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("RssFeedUrl")
                         .IsRequired()
                         .HasMaxLength(255)
