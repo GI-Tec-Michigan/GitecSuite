@@ -16,17 +16,15 @@ public class BoardService
         _dbContext = dbContext;
         _displayThemeService = displayThemeService;
         _schedulePackageService = schedulePackageService;
+        _dbContext.Database.EnsureCreated();
     }
     private void SaveChanges() => _dbContext.SaveChanges();
     
-    private static T EnsureEntityExists<T>(IQueryable<T> query, string entityName, object key) where T : class =>
-        query.FirstOrDefault() ?? throw new EntityNotFoundException($"{entityName} '{key}' not found.");
-    
-        public Board GetBoard(string title) =>
-        EnsureEntityExists(_dbContext.Boards.Where(b => b.Title == title), "Board", title);
+    public Board GetBoard(string title) =>
+        _dbContext.Boards.FirstOrDefault(b => b.Title == title) ?? throw new EntityNotFoundException("Board");
 
     public Board GetBoard(Guid id) =>
-        EnsureEntityExists(_dbContext.Boards.Where(b => b.Uid == id), "Board", id);
+        _dbContext.Boards.FirstOrDefault(b => b.Uid == id) ?? throw new EntityNotFoundException("Board");
 
     public Board CreateBoard(Board board)
     {

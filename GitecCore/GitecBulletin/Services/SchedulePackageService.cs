@@ -10,19 +10,17 @@ public class SchedulePackageService
     public SchedulePackageService(GitecBulletinDbContext dbContext)
     {
         _dbContext = dbContext;
+        _dbContext.Database.EnsureCreated();
     }
     private void SaveChanges() => _dbContext.SaveChanges();
-    
-    private static T EnsureEntityExists<T>(IQueryable<T> query, string entityName, object key) where T : class =>
-        query.FirstOrDefault() ?? throw new EntityNotFoundException($"{entityName} '{key}' not found.");
     
     public IQueryable<SchedulePackage> GetSchedulePackages() => _dbContext.SchedulePackages;
 
     public SchedulePackage GetSchedulePackage(string name) =>
-        EnsureEntityExists(_dbContext.SchedulePackages.Where(sp => sp.Title == name), "SchedulePackage", name);
+        _dbContext.SchedulePackages.SingleOrDefault(s => s.Name == name) ?? throw new EntityNotFoundException("SchedulePackage");
 
     public SchedulePackage GetSchedulePackage(Guid id) =>
-        EnsureEntityExists(_dbContext.SchedulePackages.Where(sp => sp.Uid == id), "SchedulePackage", id);
+        _dbContext.SchedulePackages.SingleOrDefault(s => s.Uid == id) ?? throw new EntityNotFoundException("SchedulePackage");
 
     public SchedulePackage CreateSchedulePackage(SchedulePackage schedulePackage)
     {
@@ -42,5 +40,5 @@ public class SchedulePackageService
     }
 
     public SchedulePackage GetDefaultSchedulePackage() =>
-        EnsureEntityExists(_dbContext.SchedulePackages.Where(sp => sp.IsDefault), "Default SchedulePackage", "Default");
+        _dbContext.SchedulePackages.SingleOrDefault(s => s.IsDefault) ?? throw new EntityNotFoundException("Default SchedulePackage");
 }

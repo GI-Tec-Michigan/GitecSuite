@@ -10,20 +10,18 @@ public class DisplayThemeService
     public DisplayThemeService(GitecBulletinDbContext dbContext)
     {
         _dbContext = dbContext;
+        _dbContext.Database.EnsureCreated();
     }
     private void SaveChanges() => _dbContext.SaveChanges();
-    
-    private static T EnsureEntityExists<T>(IQueryable<T> query, string entityName, object key) where T : class =>
-        query.FirstOrDefault() ?? throw new EntityNotFoundException($"{entityName} '{key}' not found.");
     
     public IQueryable<DisplayTheme> GetDisplayThemes(bool includeArchived = false) =>
         _dbContext.DisplayThemes.Where(theme => includeArchived || !theme.IsArchived);
 
     public DisplayTheme GetDisplayTheme(string name) =>
-        EnsureEntityExists(_dbContext.DisplayThemes.Where(theme => theme.Title == name), "DisplayTheme", name);
+        _dbContext.DisplayThemes.FirstOrDefault(theme => theme.Name == name) ?? throw new EntityNotFoundException("DisplayTheme");
 
     public DisplayTheme GetDisplayTheme(Guid id) =>
-        EnsureEntityExists(_dbContext.DisplayThemes.Where(theme => theme.Uid == id), "DisplayTheme", id);
+        _dbContext.DisplayThemes.FirstOrDefault(x => x.Uid == id) ?? throw new EntityNotFoundException("DisplayTheme"); 
 
     public DisplayTheme CreateDisplayTheme(DisplayTheme displayTheme)
     {
@@ -47,7 +45,7 @@ public class DisplayThemeService
     }
 
     public DisplayTheme GetDefaultDisplayTheme() =>
-        EnsureEntityExists(_dbContext.DisplayThemes.Where(theme => theme.IsDefault), "Default DisplayTheme", "Default");
+        _dbContext.DisplayThemes.FirstOrDefault(x => x.IsDefault) ?? throw new EntityNotFoundException("DefaultDisplayTheme");
 
     public void ToggleDisplayThemeArchiveStatus(DisplayTheme displayTheme, bool isArchived)
     {

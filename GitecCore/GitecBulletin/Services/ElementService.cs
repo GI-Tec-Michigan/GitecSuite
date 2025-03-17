@@ -11,20 +11,18 @@ public class ElementService
     public ElementService(GitecBulletinDbContext dbContext)
     {
         _dbContext = dbContext;
+        _dbContext.Database.EnsureCreated();
     }
     private void SaveChanges() => _dbContext.SaveChanges();
-    
-    private static T EnsureEntityExists<T>(IQueryable<T> query, string entityName, object key) where T : class =>
-        query.FirstOrDefault() ?? throw new EntityNotFoundException($"{entityName} '{key}' not found.");
     
     public IQueryable<Element> GetElements(bool includeArchived = false) =>
         _dbContext.Elements.Where(e => includeArchived || !e.IsArchived);
 
     public Element GetElement(string title) =>
-        EnsureEntityExists(_dbContext.Elements.Where(e => e.Title == title), "Element", title);
+        _dbContext.Elements.FirstOrDefault(e => e.Title == title) ?? throw new EntityNotFoundException("Element");
 
     public Element GetElement(Guid id) =>
-        EnsureEntityExists(_dbContext.Elements.Where(e => e.Uid == id), "Element", id);
+        _dbContext.Elements.FirstOrDefault(e => e.Uid == id) ?? throw new EntityNotFoundException("Element");
 
 
     public Element CreateElement(Element element)

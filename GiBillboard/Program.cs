@@ -36,7 +36,7 @@ public class Program
         {
             var scopedServices = scope.ServiceProvider;
             var seed = scopedServices.GetRequiredService<DataSeedService>();
-            seed.SeedData();
+            seed.SeedData(false);
         }
 
         // Configure the HTTP request pipeline.

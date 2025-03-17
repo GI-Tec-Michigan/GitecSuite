@@ -1,6 +1,9 @@
+using Gitec;
+using Gitec.GitecBulletin.Data;
+using Gitec.GitecBulletin.Models;
 using Gitec.GitecBulletin.Services;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Logging;
 
 namespace GiBillboard.Pages;
 
@@ -12,9 +15,15 @@ public class IndexModel : PageModel
     private readonly ElementService _elementService;
     private readonly SchedulePackageService _schedulePackageService;
     private readonly DisplayThemeService _displayThemeService;
-    
 
-    public IndexModel(ILogger<IndexModel> logger, DisplayScreenService displayScreenService, BoardService boardService, ElementService elementService, SchedulePackageService schedulePackageService, DisplayThemeService displayThemeService)
+    public DisplayScreen DisplayScreen { get; set; } // Initialize to avoid null issues
+
+    public IndexModel(ILogger<IndexModel> logger, 
+        DisplayScreenService displayScreenService, 
+        BoardService boardService, 
+        ElementService elementService, 
+        SchedulePackageService schedulePackageService, 
+        DisplayThemeService displayThemeService)
     {
         _logger = logger;
         _displayScreenService = displayScreenService;
@@ -22,11 +31,12 @@ public class IndexModel : PageModel
         _elementService = elementService;
         _schedulePackageService = schedulePackageService;
         _displayThemeService = displayThemeService;
-        _logger.LogInformation("IndexModel constructor called.");
     }
 
     public void OnGet()
     {
-        var display = _displayScreenService.GetDisplay("Main");
+        _logger.LogInformation("Fetching DisplayScreen...");
+
+        DisplayScreen = _displayScreenService.GetDisplay(CoreConstants.Default);
     }
-}
+}                   

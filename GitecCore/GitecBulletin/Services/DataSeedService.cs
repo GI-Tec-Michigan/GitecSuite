@@ -37,22 +37,10 @@ public class DataSeedService
         SeedDisplayScreen(force);
     }
 
-    private T? EnsureDefaultEntity<T>(IQueryable<T> query, bool force) where T : class
-    {
-        var entity = query.FirstOrDefault();
-        if (entity == null) return null;
-
-        if (!force) return entity;
-        _dbContext.Remove(entity);
-        _dbContext.SaveChanges();
-        return null;
-
-    }
-
     private void SeedDisplayTheme(bool force = false)
     {
-        if (EnsureDefaultEntity(_dbContext.DisplayThemes.Where(t => t.IsDefault), force) != null)
-            return;
+        if (force)
+            _dbContext.DisplayThemes.RemoveRange(_dbContext.DisplayThemes.Where(x => x.IsDefault).ToList());
         
         _displayThemeService.CreateDisplayTheme(new DisplayTheme(CoreConstants.Default)
         {
@@ -68,9 +56,8 @@ public class DataSeedService
 
     private void SeedDefaultSchedulePackage(bool force = false)
     {
-        if (EnsureDefaultEntity(_dbContext.SchedulePackages.Where(sp => sp.IsDefault), force) != null)
-            return;
-        
+        if (force)
+            _dbContext.SchedulePackages.RemoveRange(_dbContext.SchedulePackages.Where(x => x.IsDefault).ToList());
         _schedulePackageService.CreateSchedulePackage(new SchedulePackage(CoreConstants.Default)
         {
             ActiveDays = Enum.GetValues<DayOfWeek>().ToArray(),
@@ -81,9 +68,8 @@ public class DataSeedService
 
     private void SeedElement(bool force = false)
     {
-        if (EnsureDefaultEntity(_dbContext.Elements.Where(e => e.Title == CoreConstants.Default), force) != null)
-            return;
-
+        if (force)
+            _dbContext.Elements.RemoveRange(_dbContext.Elements.Where(x => x.Title == CoreConstants.Default).ToList());
         var defaultSchedule = _dbContext.SchedulePackages.FirstOrDefault(sp => sp.IsDefault)
             ?? throw new EntityNotFoundException("Default schedule package not found.");
 
@@ -96,9 +82,8 @@ public class DataSeedService
 
     private void SeedBoard(bool force = false)
     {
-        if (EnsureDefaultEntity(_dbContext.Boards.Where(b => b.Title == CoreConstants.Default), force) != null)
-            return;
-     
+        if (force)
+            _dbContext.Boards.RemoveRange(_dbContext.Boards.Where(x => x.Title == CoreConstants.Default).ToList());
         _boardService.CreateBoard(new Board(CoreConstants.Default)
         {
             DisplayTheme = _dbContext.DisplayThemes.FirstOrDefault(t => t.IsDefault),
@@ -109,9 +94,8 @@ public class DataSeedService
 
     private void SeedDisplayScreen(bool force = false)
     {
-        if (EnsureDefaultEntity(_dbContext.Displays.Where(d => d.Title == CoreConstants.Default), force) != null)
-            return;
-
+        if (force)
+            _dbContext.Displays.RemoveRange(_dbContext.Displays.Where(x => x.Title == CoreConstants.Default).ToList());
         var board = _dbContext.Boards.Include(b => b.Elements).FirstOrDefault(b => b.Title == CoreConstants.Default)
             ?? throw new EntityNotFoundException("Default board not found.");
 

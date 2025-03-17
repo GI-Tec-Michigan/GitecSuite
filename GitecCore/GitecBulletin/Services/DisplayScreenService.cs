@@ -10,20 +10,24 @@ public class DisplayScreenService
     public DisplayScreenService(GitecBulletinDbContext dbContext)
     {
         _dbContext = dbContext;
+        _dbContext.Database.EnsureCreated();
     }
     private void SaveChanges() => _dbContext.SaveChanges();
-    
-    private static T EnsureEntityExists<T>(IQueryable<T> query, string entityName, object key) where T : class =>
-        query.FirstOrDefault() ?? throw new EntityNotFoundException($"{entityName} '{key}' not found.");
     
     public IQueryable<DisplayScreen> GetDisplays(bool includeArchived = false) =>
         _dbContext.Displays.Where(d => includeArchived || !d.IsArchived);
 
-    public DisplayScreen GetDisplay(string title) =>
-        EnsureEntityExists(_dbContext.Displays.Where(d => d.Title == title), "Display", title);
+    public DisplayScreen GetDisplay(string title)
+    {
+        if (string.IsNullOrWhiteSpace(title))
+            throw new ArgumentException("Display title cannot be null or empty.", nameof(title));
+        
+        var display = _dbContext.Displays.FirstOrDefault(d => d.Title == title);
+        return display ?? throw new EntityNotFoundException("Display");
+    }
 
     public DisplayScreen GetDisplay(Guid id) =>
-        EnsureEntityExists(_dbContext.Displays.Where(d => d.Uid == id), "Display", id);
+        _dbContext.Displays.FirstOrDefault(x => x.Uid == id) ?? throw new EntityNotFoundException("Display");
 
     public DisplayScreen CreateDisplay(DisplayScreen display)
     {
