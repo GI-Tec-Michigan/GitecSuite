@@ -5,6 +5,8 @@ VisualStudioVersion = 17.12.35728.132
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitecCore", "GitecCore\GitecCore.csproj", "{8EC73987-0E8C-402D-8DCA-BC36065F7B86}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GiBillboard", "GiBillboard\GiBillboard.csproj", "{9DF91B00-BABD-412A-AA07-DB28EFD85C5A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{8EC73987-0E8C-402D-8DCA-BC36065F7B86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8EC73987-0E8C-402D-8DCA-BC36065F7B86}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8EC73987-0E8C-402D-8DCA-BC36065F7B86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DF91B00-BABD-412A-AA07-DB28EFD85C5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DF91B00-BABD-412A-AA07-DB28EFD85C5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DF91B00-BABD-412A-AA07-DB28EFD85C5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DF91B00-BABD-412A-AA07-DB28EFD85C5A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

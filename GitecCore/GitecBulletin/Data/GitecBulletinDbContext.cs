@@ -1,12 +1,7 @@
 ﻿using Gitec.GitecBulletin.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gitec.Models;
 
 namespace Gitec.GitecBulletin.Data;
@@ -14,7 +9,8 @@ namespace Gitec.GitecBulletin.Data;
 public class GitecBulletinDbContext : DbContext
 {
     public GitecBulletinDbContext(DbContextOptions<GitecBulletinDbContext> options) : base(options) { }
-
+    // Parameterless constructor for EF Core Migrations
+    public GitecBulletinDbContext() { }
     public DbSet<DisplayScreen> Displays { get; set; }
     public DbSet<Board> Boards { get; set; }
     public DbSet<Element> Elements { get; set; }
@@ -27,20 +23,25 @@ public class GitecBulletinDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         // EntityBase Configurations
-        modelBuilder.Entity<EntityBase>()
-            .HasKey(e => e.Uid);
+        modelBuilder.Entity<Board>()
+            .HasOne(b => b.Schedule)
+            .WithMany()
+            .OnDelete(DeleteBehavior.SetNull);
 
-        modelBuilder.Entity<EntityBase>()
-            .Property(e => e.CreatedAt)
-            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+        modelBuilder.Entity<Board>()
+            .HasOne(b => b.DisplayTheme)
+            .WithMany()
+            .OnDelete(DeleteBehavior.SetNull);
 
-        modelBuilder.Entity<EntityBase>()
-            .Property(e => e.UpdatedAt)
-            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+        modelBuilder.Entity<Board>()
+            .HasMany(b => b.Elements)
+            .WithOne()
+            .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<EntityBase>()
-            .Property(e => e.IsArchived)
-            .HasDefaultValue(false);
+        modelBuilder.Entity<DisplayScreen>()
+            .HasMany(ds => ds.Boards)
+            .WithOne()
+            .OnDelete(DeleteBehavior.Cascade);
         
         // Define a single Color-to-String converter
         var colorConverter = new ValueConverter<Color, string>(

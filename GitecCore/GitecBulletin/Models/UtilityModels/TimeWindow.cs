@@ -1,4 +1,6 @@
-﻿namespace Gitec.GitecBulletin.Models.UtilityModels;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Gitec.GitecBulletin.Models.UtilityModels;
 
 public class TimeWindow
 {
@@ -13,7 +15,8 @@ public class TimeWindow
         StartTime = TimeSpan.Zero;
         EndTime = TimeSpan.FromHours(24); // Default to a full day
     }
-
+    [Key]
+    public int Id { get; set; }
     public TimeSpan StartTime { get; set; }
     public TimeSpan EndTime { get; set; }
 

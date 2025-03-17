@@ -10,7 +10,7 @@ public class SchedulePackage : EntityBase
     {
     }
     public bool IsDefault { get; set; } = false;
-    public DayOfWeek[] ActiveDays { get; set; } = [];
-    public TimeWindow[] TimeWindows { get; set; } = [];
-    public DateRange[] DateRanges { get; set; } = [];
+    public ICollection<DayOfWeek> ActiveDays { get; set; } = [];
+    public ICollection<TimeWindow> TimeWindows { get; set; } = [];
+    public ICollection<DateRange> DateRanges { get; set; } = [];
 }

@@ -1,7 +1,9 @@
-﻿using Gitec.GitecBulletin.Data;
+﻿using Gitec.ExceptionHandling;
+using Gitec.GitecBulletin.Data;
 using Gitec.GitecBulletin.Enums;
 using Gitec.GitecBulletin.Models;
 using Gitec.GitecBulletin.Models.UtilityModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace Gitec.GitecBulletin.Services;
 
@@ -9,31 +11,50 @@ public class DataSeedService
 {
     private readonly GitecBulletinDbContext _dbContext;
     
-    private readonly string _defaultDisplayTitle = "Default";
-    
-    public DataSeedService(GitecBulletinDbContext dbContext)
+    private readonly ElementService _elementService;
+    private readonly BoardService _boardService;
+    private readonly DisplayThemeService _displayThemeService;
+    private readonly SchedulePackageService _schedulePackageService;
+    private readonly DisplayScreenService _displayScreenThemeService;
+
+    public DataSeedService(GitecBulletinDbContext dbContext, ElementService elementService, BoardService boardService, DisplayThemeService displayThemeService, SchedulePackageService schedulePackageService, DisplayScreenService displayScreenThemeService)
     {
-        _dbContext = dbContext;
+        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+        _elementService = elementService ?? throw new ArgumentNullException(nameof(elementService));
+        _boardService = boardService ?? throw new ArgumentNullException(nameof(boardService));
+        _displayThemeService = displayThemeService ?? throw new ArgumentNullException(nameof(displayThemeService));
+        _schedulePackageService = schedulePackageService ?? throw new ArgumentNullException(nameof(schedulePackageService));
+        _displayScreenThemeService = displayScreenThemeService ?? throw new ArgumentNullException(nameof(displayScreenThemeService));
         _dbContext.Database.EnsureCreated(); // Ensure the database is created
     }
-    
+
     public void SeedData(bool force = false)
     {
-        // This method is intended to seed the database with initial data.
-        // The implementation will depend on the specific requirements of your application.
-        
-        // Example: Add default schedule packages, board types, etc.
-        
-        // Note: Ensure that this method is idempotent, meaning it can be called multiple times without
-        // causing duplicate entries or errors.
-        SeedDisplayThemes(force);
+        SeedDisplayTheme(force);
         SeedDefaultSchedulePackage(force);
-        SeedInitDisplay(force);
+        SeedElement(force);
+        SeedBoard(force);
+        SeedDisplayScreen(force);
     }
-    
-    private void SeedDisplayThemes(bool force = false)
+
+    private T? EnsureDefaultEntity<T>(IQueryable<T> query, bool force) where T : class
     {
-        var theme = new DisplayTheme(_defaultDisplayTitle)
+        var entity = query.FirstOrDefault();
+        if (entity == null) return null;
+
+        if (!force) return entity;
+        _dbContext.Remove(entity);
+        _dbContext.SaveChanges();
+        return null;
+
+    }
+
+    private void SeedDisplayTheme(bool force = false)
+    {
+        if (EnsureDefaultEntity(_dbContext.DisplayThemes.Where(t => t.IsDefault), force) != null)
+            return;
+        
+        _displayThemeService.CreateDisplayTheme(new DisplayTheme(CoreConstants.Default)
         {
             BgColor = System.Drawing.Color.LightGray,
             TextColor = System.Drawing.Color.DarkGray,
@@ -42,70 +63,66 @@ public class DataSeedService
             FrameAccentColor = System.Drawing.Color.White,
             ShowFrame = true,
             IsDefault = true
-        };
-        if (_dbContext.DisplayThemes.Any() && !force)
-            return;
-        if (_dbContext.DisplayThemes.Any(t => t.Title == theme.Title))
-            return;
-        _dbContext.DisplayThemes.Add(theme);
-        _dbContext.SaveChanges();
+        });
     }
-    
+
     private void SeedDefaultSchedulePackage(bool force = false)
     {
-        if (_dbContext.SchedulePackages.Any() && !force)
+        if (EnsureDefaultEntity(_dbContext.SchedulePackages.Where(sp => sp.IsDefault), force) != null)
             return;
-
-        var schedulePackage = new SchedulePackage(_defaultDisplayTitle)
+        
+        _schedulePackageService.CreateSchedulePackage(new SchedulePackage(CoreConstants.Default)
         {
-            ActiveDays = [DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday],
-            TimeWindows = [new TimeWindow
-            {
-                StartTime = TimeSpan.Zero,
-                EndTime = TimeSpan.FromHours(24)
-            }],
+            ActiveDays = Enum.GetValues<DayOfWeek>().ToArray(),
+            TimeWindows = [new TimeWindow { StartTime = TimeSpan.Zero, EndTime = TimeSpan.FromHours(24) }],
             IsDefault = true
-        };
-
-        _dbContext.SchedulePackages.Add(schedulePackage);
-        _dbContext.SaveChanges();
+        });
     }
 
-    private void SeedInitDisplay(bool force = false)
+    private void SeedElement(bool force = false)
     {
-        
-        var element = new Element(_defaultDisplayTitle)
+        if (EnsureDefaultEntity(_dbContext.Elements.Where(e => e.Title == CoreConstants.Default), force) != null)
+            return;
+
+        var defaultSchedule = _dbContext.SchedulePackages.FirstOrDefault(sp => sp.IsDefault)
+            ?? throw new EntityNotFoundException("Default schedule package not found.");
+
+        _elementService.CreateElement(new Element(CoreConstants.Default)
         {
-            Content = "Welcome to the Gitec Bulletin Board!",
             Type = ElementType.Markdown,
-            Schedule = _dbContext.SchedulePackages.FirstOrDefault(sp => sp.IsDefault) ?? throw new InvalidOperationException("Default schedule package not found.")
-        };
-        
-        var board = new Board(_defaultDisplayTitle)
-        {
-            DisplayTheme = _dbContext.DisplayThemes.FirstOrDefault(t => t.IsDefault) ?? throw new InvalidOperationException("Default theme not found."),
-            Schedule = _dbContext.SchedulePackages.FirstOrDefault(sp => sp.IsDefault) ?? throw new InvalidOperationException("Default schedule package not found."),
-            BoardType = BoardType.Elemental,
-            Elements = new List<Element> { element }
-        };
-        
-        var display = new DisplayScreen(_defaultDisplayTitle)
-        {
-            Location = "Main"
-        };
-
-        if (_dbContext.Displays.Any() && !force)
-            return;
-        if (_dbContext.Boards.Any(b => b.Title == board.Title) && !force)
-            return;
-        if (_dbContext.Elements.Any(e => e.Title == element.Title) && !force)
-            return;
-        
-        _dbContext.Boards.Add(board);
-        _dbContext.Displays.Add(display);
-        _dbContext.SaveChanges();
+            Schedule = defaultSchedule
+        });
     }
-    
 
-    
+    private void SeedBoard(bool force = false)
+    {
+        if (EnsureDefaultEntity(_dbContext.Boards.Where(b => b.Title == CoreConstants.Default), force) != null)
+            return;
+     
+        _boardService.CreateBoard(new Board(CoreConstants.Default)
+        {
+            DisplayTheme = _dbContext.DisplayThemes.FirstOrDefault(t => t.IsDefault),
+            Schedule = _dbContext.SchedulePackages.FirstOrDefault(sp => sp.IsDefault),
+            BoardType = BoardType.Elemental
+        });
+    }
+
+    private void SeedDisplayScreen(bool force = false)
+    {
+        if (EnsureDefaultEntity(_dbContext.Displays.Where(d => d.Title == CoreConstants.Default), force) != null)
+            return;
+
+        var board = _dbContext.Boards.Include(b => b.Elements).FirstOrDefault(b => b.Title == CoreConstants.Default)
+            ?? throw new EntityNotFoundException("Default board not found.");
+
+        if (board.Elements.Count == 0)
+            board.Elements.Add(_dbContext.Elements.FirstOrDefault(e => e.Title == CoreConstants.Default)
+                ?? throw new EntityNotFoundException("Default element not found."));
+
+        _displayScreenThemeService.CreateDisplay(new DisplayScreen(CoreConstants.Default)
+        {
+            Boards = new List<Board> { board },
+            Location = "Main"
+        });
+    }
 }
