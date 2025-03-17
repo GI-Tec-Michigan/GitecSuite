@@ -13,7 +13,7 @@ namespace Gitec.GitecBulletin.Models;
 
 public class DisplayScreen : EntityBase
 {
-    public DisplayScreen(string title, string location) : base(title)
+    public DisplayScreen(string title) : base(title)
     {
         
     }
@@ -23,7 +23,6 @@ public class DisplayScreen : EntityBase
     [MaxLength(100)]
     public string Description { get; set; } = "";
     public IPAddress HostIp { get; set; } = IPAddress.Parse("127.0.0.1");
-    public ThemeDef Theme { get; set; } = new ThemeDef("Default");
-    public ICollection<XDisplayBoards> BulletinDisplayBoards { get; set; } = new List<XDisplayBoards>();
+    public ICollection<Board> Boards { get; set; } = new List<Board>();
 }
 

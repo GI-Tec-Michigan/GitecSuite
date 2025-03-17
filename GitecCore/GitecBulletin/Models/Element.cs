@@ -13,7 +13,6 @@ public class Element : EntityBase
     
     public string Content { get; set; } = "";
     public ElementType Type { get; set; } = ElementType.Unknown;
-    public SchedulePackage Schedule { get; set; } = new SchedulePackage();
-    public ThemeDef Theme { get; set; } = new ThemeDef("Default");
-    public ICollection<XBoardElements> BulletinBoardElements { get; set; } = new List<XBoardElements>();
+    public SchedulePackage Schedule { get; set; }
+    public int SortOrder { get; set; } = 0;
 }

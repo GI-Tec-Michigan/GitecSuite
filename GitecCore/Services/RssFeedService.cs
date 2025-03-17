@@ -22,7 +22,7 @@ public class RssFeedService
                 throw new Exception($"Failed to fetch RSS feed: {response.StatusCode}");
             }
 
-            using var stream = await response.Content.ReadAsStreamAsync();
+            await using var stream = await response.Content.ReadAsStreamAsync();
             using var xmlReader = XmlReader.Create(stream);
             var feed = SyndicationFeed.Load(xmlReader);
 

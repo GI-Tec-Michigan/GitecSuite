@@ -1,93 +1,100 @@
 ﻿using Gitec.ExceptionHandling;
 using Gitec.Utilities;
-using Newtonsoft.Json;
 using System.Runtime.InteropServices;
 
 namespace Gitec.Services;
 
-public static class ConfigurationService
+public class ConfigurationService
 {
-    public static bool IsInitialized { get; set; } = false;
-    private static string? BasePath { get; set; }
-    private static string? LogPath { get; set; }
-    private static string? LogFile { get; set; }
-    private static string? DatabasePath { get; set; }
-    private static string? AppName { get; set; }
-    private static string? DatabaseFile { get; set; }
-    private static string? TempPath { get; set; }
-    private static string? UploadPath { get; set; }
-    private static string? AssetsPath { get; set; }
+    private bool IsInitialized { get; set; }
+    private string? AppName { get; set; }
+    private string? BasePath { get; set; }
+    private string? LogPath { get; set; }
+    private string? LogFile { get; set; }
+    private string? DatabasePath { get; set; }
+    private string? DatabaseFile { get; set; }
+    private string? TempPath { get; set; }
+    private string? UploadPath { get; set; }
+    private string? AssetsPath { get; set; }
+    private string? ImagePath { get; set; }
+    
+    public string GetImagePath()
+    {
+        if (!IsInitialized)
+            throw new ConfigurationException("Configuration is not initialized. Image Path is not set.");
+        return ImagePath!;
+    }
 
-    private static string? GetAssetsPath()
+    private string GetAssetsPath()
     {
         if (!IsInitialized)
             throw new ConfigurationException("Configuration is not initialized. Assets Path is not set.");
         return AssetsPath!;
     }
 
-    private static string? GetUploadPath()
+    private string GetUploadPath()
     {
         if (!IsInitialized)
             throw new ConfigurationException("Configuration is not initialized. Upload Path is not set.");
         return UploadPath!;
     }
-    public static string GetTempPath()
+    public string GetTempPath()
     {
         if (!IsInitialized)
             throw new ConfigurationException("Configuration is not initialized. File Path is not set.");
         return TempPath!;
     }
 
-    public static string GetAppName()
+    public string GetAppName()
     {
         if (!IsInitialized)
             throw new ConfigurationException("Configuration is not initialized. App Name is not set.");
         return AppName!;
     }
 
-    public static string GetBasePath()
+    public string GetBasePath()
     {
         if (!IsInitialized)
             throw new ConfigurationException("Configuration is not initialized. Base Path is not set.");
         return BasePath!;
     }
 
-    public static string GetLogPath()
+    public string GetLogPath()
     {
         if (!IsInitialized)
             throw new ConfigurationException("Configuration is not initialized. Log Path is not set.");
         return LogPath!;
     }
 
-    public static string GetLogFile()
+    public string GetLogFile()
     {
         if (!IsInitialized)
             throw new ConfigurationException("Configuration is not initialized. Log File is not set.");
         return LogFile!;
     }
 
-    public static string GetDatabasePath()
+    public string GetDatabasePath()
     {
         if (!IsInitialized)
             throw new ConfigurationException("Configuration is not initialized. Database Path is not set.");
         return DatabasePath!;
     }
 
-    public static string GetDatabaseFile()
+    public string GetDatabaseFile()
     {
         if (!IsInitialized)
             throw new ConfigurationException("Configuration is not initialized. DatabaseFile is not set.");
         return DatabaseFile!;
     }
 
-    public static string GetConnectionString()
+    public string GetConnectionString()
     {
         if (!IsInitialized)
             throw new ConfigurationException("Configuration is not initialized. Database Connection is not set.");
         return $"Data Source={DatabaseFile}";
     }
 
-    public static void Initialize(string appName)
+    public void Initialize(string appName)
     {
         try { 
 
@@ -96,6 +103,7 @@ public static class ConfigurationService
             AppName = appName;
             Console.WriteLine($"{AppName} Configuration Service Initialize");
             BasePath = GetBasePathInternal();
+            
             LogPath = Path.Combine(BasePath, "Logs");
             LogFile = Path.Combine(LogPath, "events.log");
             DatabasePath = Path.Combine(BasePath, "Data");
@@ -103,6 +111,7 @@ public static class ConfigurationService
             TempPath = Path.Combine(BasePath, "Temp");
             UploadPath = Path.Combine(BasePath, "Uploads");
             AssetsPath = Path.Combine(BasePath, "Assets");
+            ImagePath = Path.Combine(UploadPath, "Images");
         
             FileDirectoryHelper.CreateDirectory(BasePath);
             FileDirectoryHelper.CreateDirectory(DatabasePath);
@@ -111,45 +120,52 @@ public static class ConfigurationService
             FileDirectoryHelper.CreateDirectory(TempPath);
             FileDirectoryHelper.CreateDirectory(UploadPath);
             FileDirectoryHelper.CreateDirectory(AssetsPath);
+            FileDirectoryHelper.CreateDirectory(ImagePath);
 
             IsInitialized = true;
             Console.WriteLine($"{AppName} Configuration Service Initialize Complete");
         }
         catch (Exception ex)
         {
-            // Optionally log the exception here before rethrowing.
             throw new ConfigurationException("Failed to initialize configuration service.", ex);
         }
     }
 
-    private static string GetBasePathInternal()
+    private string GetBasePathInternal()
     {
         try
         {
             // Determine the base path based on the operating system.
-            string basePath = Environment.OSVersion.Platform switch
+            string basePath;
+            switch (Environment.OSVersion.Platform)
             {
                 // Windows: Use the common application data folder.
-                PlatformID.Win32NT => Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-                    CoreConstants.CoreName,
-                    $"{CoreConstants.CoreName}.{AppName}"
-                ),
-
+                case PlatformID.Win32NT:
+                    basePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                        CoreConstants.CoreName, $"{CoreConstants.CoreName}.{AppName}");
+                    break;
                 // Unix: Check if macOS or Linux.
-                PlatformID.Unix when RuntimeInformation.IsOSPlatform(OSPlatform.OSX) =>
-                    Path.Combine("/usr/local/var", CoreConstants.CoreName, $"{CoreConstants.CoreName}.{AppName}"),
-                PlatformID.Unix =>
-                    Path.Combine("/var/lib", CoreConstants.CoreName, $"{CoreConstants.CoreName}.{AppName}"),
+                case PlatformID.Unix when RuntimeInformation.IsOSPlatform(OSPlatform.OSX):
+                    basePath = Path.Combine("/usr/local/var", CoreConstants.CoreName,
+                        $"{CoreConstants.CoreName}.{AppName}");
+                    break;
+                case PlatformID.Unix:
+                    basePath = Path.Combine("/var/lib", CoreConstants.CoreName, $"{CoreConstants.CoreName}.{AppName}");
+                    break;
+                case PlatformID.Win32S:
+                case PlatformID.Win32Windows:
+                case PlatformID.WinCE:
+                case PlatformID.Xbox:
+                case PlatformID.MacOSX:
+                case PlatformID.Other:
+                default:
+                    // Unsupported platform.
+                    throw new PlatformNotSupportedException("The current operating system is not supported.");
+            }
 
-                // Unsupported platform.
-                _ => throw new PlatformNotSupportedException("The current operating system is not supported.")
-            };
-
-            // Create the directory if it doesn't exist.
             if (!Directory.Exists(basePath))
             {
-                Directory.CreateDirectory(basePath);
+                FileDirectoryHelper.CreateDirectory(basePath);
             }
 
             return basePath;

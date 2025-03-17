@@ -10,6 +10,11 @@ public class EntityBase
         Title = title;
         Name = Title.ToSlug();
     }
+    
+    public EntityBase()
+    {
+        // Default constructor for EF Core
+    }
 
     [Key]
     public Guid Uid { get; set; } = Guid.NewGuid();
