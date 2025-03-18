@@ -19,4 +19,6 @@ public abstract class Board : BaseEntity
     // Lazy-loaded Navigation Properties
     public virtual ICollection<DisplayBoardRel> DisplayBoardRelations { get; set; } = new HashSet<DisplayBoardRel>();
     public virtual ICollection<BoardElementRel> BoardElementRelations { get; set; } = new HashSet<BoardElementRel>();
+    public List<Element> Elements => BoardElementRelations.Select(rel => rel.Element).ToList();
+    public List<Display> Displays => DisplayBoardRelations.Select(rel => rel.Display).ToList();
 }

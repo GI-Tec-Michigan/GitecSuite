@@ -6,6 +6,7 @@ namespace GitecEngine.InfoBoard.Models;
 
 public sealed class Display : BaseEntity
 {
+
     public Display(string title) : base(title)
     {
         Title = title;
@@ -17,4 +18,5 @@ public sealed class Display : BaseEntity
 
     // Lazy-loaded Navigation Properties
     public ICollection<DisplayBoardRel> DisplayBoardRelations { get; set; } = new HashSet<DisplayBoardRel>();
+    public List<Board> Boards => DisplayBoardRelations.Select(rel => rel.Board).ToList();
 }

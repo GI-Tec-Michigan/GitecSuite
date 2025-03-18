@@ -8,5 +8,6 @@ public enum ElementType
     Image = 3,
     Video = 4,
     LiveData = 5,
-    Calendar = 6
+    Calendar = 6,
+    DateTime = 7,
 }

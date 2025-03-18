@@ -281,34 +281,7 @@ public class InfoBoardService : IInfoBoardService
     }
 
     
-    // Seed ============================================================================================================
-    
-    public void Seed()
-    {
-        if (_dbContext.Displays.Any()) return;
-        var display = new Display("Main Display");
-        var board = new ElementalBoard("Main Board");
 
-        var bSchedule = new SchedulePackage("Weekdays All Day");
-        bSchedule.Dates.Add(new ScheduleDate(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddYears(1))));
-        bSchedule.Times.Add(new ScheduleTime(TimeOnly.MinValue, TimeOnly.MaxValue));
-        bSchedule.DaysOfWeek.AddRange([DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday
-        ]);
-
-        var dSchedule = new SchedulePackage("Weekends All Day");
-        dSchedule.Dates.Add(new ScheduleDate(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddYears(1))));
-        dSchedule.Times.Add(new ScheduleTime(TimeOnly.MinValue, TimeOnly.MaxValue));
-        dSchedule.DaysOfWeek.AddRange([DayOfWeek.Saturday, DayOfWeek.Sunday]);
-
-        var element = new MarkdownElement("Main Element") { Content = "Hello, World!" };
-
-        board.SchedulePackages = [bSchedule, dSchedule];
-        element.SchedulePackages = [bSchedule, dSchedule];
-
-        _dbContext.AddRange(display, board, element, bSchedule, dSchedule);
-        SaveChanges();
-
-    }
 
     
     

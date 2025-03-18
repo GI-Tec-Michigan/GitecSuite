@@ -15,6 +15,7 @@ public class VideoElement : Element
     }
 
     public string VideoSrc { get; set; } = "";
+    public string VideoAlt { get; set; } = "";
     public Justify TextPosition { get; set; } = Justify.Center;
 
 }

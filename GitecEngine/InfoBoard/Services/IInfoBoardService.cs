@@ -51,9 +51,7 @@ public interface IInfoBoardService
     void MoveBoardOrder(Display display, Board board, Direction dir);
     void MoveElementOrder(Board board, Element element, Direction dir);
 
-    // Initialization
-    void Seed();
-    
+   
     // Board Creation
     
     AlertBoard CreateAlertBoard(string title);

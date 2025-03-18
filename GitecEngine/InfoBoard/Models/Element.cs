@@ -21,4 +21,6 @@ public abstract class Element : BaseEntity
     
     // Lazy-loaded Navigation Property
     public virtual ICollection<BoardElementRel> BoardElementRelations { get; set; } = new HashSet<BoardElementRel>();
+    
+    public List<Board> Boards => BoardElementRelations.Select(rel => rel.Board).ToList();
 }
